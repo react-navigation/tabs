@@ -13,7 +13,8 @@
     "test": "jest",
     "flow": "flow",
     "lint": "eslint .",
-    "build": "babel --no-babelrc --plugins=syntax-jsx,syntax-class-properties,syntax-object-rest-spread,transform-flow-strip-types src --out-dir dist --ignore '**/__tests__/**'",
+    "build":
+      "babel --no-babelrc --plugins=syntax-jsx,syntax-class-properties,syntax-object-rest-spread,transform-flow-strip-types src --out-dir dist --ignore '**/__tests__/**'",
     "prepublish": "yarn build"
   },
   "keywords": [
@@ -31,12 +32,14 @@
     "type": "git",
     "url": "git+https://github.com/react-navigation/react-navigation-tabs.git"
   },
-  "author": "Satyajit Sahoo <satyajit.happy@gmail.com> (https://github.com/satya164/)",
+  "author":
+    "Satyajit Sahoo <satyajit.happy@gmail.com> (https://github.com/satya164/)",
   "license": "MIT",
   "bugs": {
     "url": "https://github.com/react-navigation/react-navigation-tabs/issues"
   },
-  "homepage": "https://github.com/react-navigation/react-navigation-tabs#readme",
+  "homepage":
+    "https://github.com/react-navigation/react-navigation-tabs#readme",
   "dependencies": {
     "hoist-non-react-statics": "^2.5.0",
     "prop-types": "^15.6.0",
@@ -47,6 +50,7 @@
   },
   "devDependencies": {
     "@expo/vector-icons": "^6.2.0",
+    "babel-cli": "^6.26.0",
     "babel-jest": "^21.2.0",
     "babel-plugin-syntax-class-properties": "^6.13.0",
     "babel-plugin-syntax-jsx": "^6.18.0",
@@ -75,14 +79,8 @@
   },
   "jest": {
     "preset": "react-native",
-    "setupFiles": [
-      "<rootDir>/__setup__/enzyme.js"
-    ],
-    "modulePathIgnorePatterns": [
-      "<rootDir>/example/node_modules"
-    ],
-    "snapshotSerializers": [
-      "enzyme-to-json/serializer"
-    ]
+    "setupFiles": ["<rootDir>/__setup__/enzyme.js"],
+    "modulePathIgnorePatterns": ["<rootDir>/example/node_modules"],
+    "snapshotSerializers": ["enzyme-to-json/serializer"]
   }
 }
