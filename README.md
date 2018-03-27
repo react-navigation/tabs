@@ -21,7 +21,7 @@ The package exports 3 different navigators:
 You can import individual navigators and use them:
 
 ```js
-import createMaterialBottomTabNavigator from 'react-navigation-tabs/createMaterialBottomTabNavigator';
+import { createMaterialBottomTabNavigator } from 'react-navigation-tabs';
 
 export default createMaterialBottomTabNavigator({
   Album: { screen: Album },
