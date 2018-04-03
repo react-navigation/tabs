@@ -21,6 +21,12 @@ type Props = InjectedProps & {
   tabBarOptions?: TabBarOptions,
   lazyOnSwipe: boolean,
   sceneAlwaysVisible: boolean,
+  isSwiping: boolean,
+};
+
+type State = {
+  loaded: Array<number>,
+  transitioningFromIndex: ?boolean,
 };
 
 class MaterialTabView extends React.PureComponent<Props> {
@@ -38,21 +44,9 @@ class MaterialTabView extends React.PureComponent<Props> {
     transitioningFromIndex: null,
   };
 
-  transitionTimeout = null;
-
-  componentWillReceiveProps(nextProps) {
-    if (
-      nextProps.navigation.state.index !== this.props.navigation.state.index
-    ) {
-      const { index } = nextProps.navigation.state;
-
-      this.setState(state => ({
-        loaded: state.loaded.includes(index)
-          ? state.loaded
-          : [...state.loaded, index],
-      }));
-    }
-  }
+  // eslint-disable-next-line react/sort-comp
+  _transitionTimeout = null;
+  _actionListener = null;
 
   _getLabel = ({ route, tintColor, focused }) => {
     const { descriptors } = this.props;
@@ -142,34 +136,58 @@ class MaterialTabView extends React.PureComponent<Props> {
       this._actionListener.remove();
     }
 
-    if (this.transitionTimeout) {
-      clearTimeout(this.transitionTimeout);
+    if (this._transitionTimeout) {
+      clearTimeout(this._transitionTimeout);
+    }
+  }
+
+  componentWillReceiveProps(nextProps) {
+    if (
+      nextProps.navigation.state.index !== this.props.navigation.state.index
+    ) {
+      const { index } = nextProps.navigation.state;
+
+      this.setState(state => ({
+        loaded: state.loaded.includes(index)
+          ? state.loaded
+          : [...state.loaded, index],
+      }));
     }
   }
 
   _onAction = payload => {
     if (payload.action.type === NavigationActions.NAVIGATE) {
-      this.setState({ transitioningFromIndex: payload.lastState && payload.lastState.index || 0 });
+      this.setState({
+        transitioningFromIndex:
+          (payload.lastState && payload.lastState.index) || 0,
+      });
     } else if (payload.action.type === 'Navigation/COMPLETE_TRANSITION') {
       InteractionManager.runAfterInteractions(() => {
         // Prevent white screen flickering
-        this.transitionTimeout = setTimeout(() =>
-          this.setState({ transitioningFromIndex: null }),
-          100,
+        this._transitionTimeout = setTimeout(
+          () => this.setState({ transitioningFromIndex: null }),
+          100
         );
       });
     }
   };
 
-  _mustBeVisible = ({ index, route, focused }) => {
-    const { animationEnabled, navigation, isSwiping, lazyOnSwipe, sceneAlwaysVisible } = this.props;
+  _mustBeVisible = ({ index, focused }) => {
+    const {
+      animationEnabled,
+      navigation,
+      isSwiping,
+      lazyOnSwipe,
+      sceneAlwaysVisible,
+    } = this.props;
     const { transitioningFromIndex, loaded } = this.state;
-    const { routes } = navigation.state;
 
     const isLoaded = loaded.includes(index);
 
     if (isSwiping && (lazyOnSwipe || isLoaded)) {
-      const isSibling = navigation.state.index === index - 1 || navigation.state.index === index + 1;
+      const isSibling =
+        navigation.state.index === index - 1 ||
+        navigation.state.index === index + 1;
 
       if (isSibling) {
         return true;
@@ -177,17 +195,21 @@ class MaterialTabView extends React.PureComponent<Props> {
     }
 
     // The previous tab should remain visible while transitioning
-    if (animationEnabled && ((isLoaded && sceneAlwaysVisible && transitioningFromIndex != null) || transitioningFromIndex === index)) {
+    if (
+      animationEnabled &&
+      ((isLoaded && sceneAlwaysVisible && transitioningFromIndex != null) ||
+        transitioningFromIndex === index)
+    ) {
       return true;
     }
 
     return focused;
   };
 
-  _renderScene = (props) => {
+  _renderScene = props => {
     const { index, route } = props;
-    const { renderScene, isSwiping, lazyOnSwipe } = this.props;
-    const { loaded } = this.state;
+    const { renderScene } = this.props;
+    const { loaded } = this.state;
 
     const mustBeVisible = this._mustBeVisible(props);
 
