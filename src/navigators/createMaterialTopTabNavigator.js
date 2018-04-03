@@ -1,8 +1,10 @@
 /* @flow */
 
 import * as React from 'react';
-import { Platform } from 'react-native';
+
+import { Platform, InteractionManager } from 'react-native';
 import { TabView, PagerPan } from 'react-native-tab-view';
+import { NavigationActions } from 'react-navigation';
 import createTabNavigator, {
   type InjectedProps,
 } from '../utils/createTabNavigator';
@@ -17,6 +19,8 @@ type Props = InjectedProps & {
   tabBarPosition?: 'top' | 'bottom',
   tabBarComponent?: React.ComponentType<*>,
   tabBarOptions?: TabBarOptions,
+  lazyOnSwipe: boolean,
+  sceneAlwaysVisible: boolean,
 };
 
 class MaterialTabView extends React.PureComponent<Props> {
@@ -25,7 +29,30 @@ class MaterialTabView extends React.PureComponent<Props> {
     initialLayout: Platform.select({
       android: { width: 1, height: 0 },
     }),
+    lazyOnSwipe: true,
+    sceneAlwaysVisible: true,
   };
+
+  state = {
+    loaded: [this.props.navigation.state.index],
+    transitioningFromIndex: null,
+  };
+
+  transitionTimeout = null;
+
+  componentWillReceiveProps(nextProps) {
+    if (
+      nextProps.navigation.state.index !== this.props.navigation.state.index
+    ) {
+      const { index } = nextProps.navigation.state;
+
+      this.setState(state => ({
+        loaded: state.loaded.includes(index)
+          ? state.loaded
+          : [...state.loaded, index],
+      }));
+    }
+  }
 
   _getLabel = ({ route, tintColor, focused }) => {
     const { descriptors } = this.props;
@@ -98,25 +125,81 @@ class MaterialTabView extends React.PureComponent<Props> {
 
   _renderPanPager = props => <PagerPan {...props} />;
 
-  _renderScene = ({ route }) => {
-    const {
-      renderScene,
-      animationEnabled,
-      swipeEnabled,
-      descriptors,
-    } = this.props;
+  componentWillMount() {
+    const { animationEnabled } = this.props;
 
-    if (animationEnabled === false && swipeEnabled === false) {
-      const { navigation } = descriptors[route.key];
-
-      return (
-        <ResourceSavingScene isFocused={navigation.isFocused()}>
-          {renderScene({ route })}
-        </ResourceSavingScene>
+    // We rely on action listener to animate from the current index to the next one, no need to listen without animation
+    if (animationEnabled) {
+      this._actionListener = this.props.navigation.addListener(
+        'action',
+        this._onAction
       );
     }
+  }
 
-    return renderScene({ route });
+  componentWillUnmount() {
+    if (this._actionListener) {
+      this._actionListener.remove();
+    }
+
+    if (this.transitionTimeout) {
+      clearTimeout(this.transitionTimeout);
+    }
+  }
+
+  _onAction = payload => {
+    if (payload.action.type === NavigationActions.NAVIGATE) {
+      this.setState({ transitioningFromIndex: payload.lastState && payload.lastState.index || 0 });
+    } else if (payload.action.type === 'Navigation/COMPLETE_TRANSITION') {
+      InteractionManager.runAfterInteractions(() => {
+        // Prevent white screen flickering
+        this.transitionTimeout = setTimeout(() =>
+          this.setState({ transitioningFromIndex: null }),
+          100,
+        );
+      });
+    }
+  };
+
+  _mustBeVisible = ({ index, route, focused }) => {
+    const { animationEnabled, navigation, isSwiping, lazyOnSwipe, sceneAlwaysVisible } = this.props;
+    const { transitioningFromIndex, loaded } = this.state;
+    const { routes } = navigation.state;
+
+    const isLoaded = loaded.includes(index);
+
+    if (isSwiping && (lazyOnSwipe || isLoaded)) {
+      const isSibling = navigation.state.index === index - 1 || navigation.state.index === index + 1;
+
+      if (isSibling) {
+        return true;
+      }
+    }
+
+    // The previous tab should remain visible while transitioning
+    if (animationEnabled && ((isLoaded && sceneAlwaysVisible && transitioningFromIndex != null) || transitioningFromIndex === index)) {
+      return true;
+    }
+
+    return focused;
+  };
+
+  _renderScene = (props) => {
+    const { index, route } = props;
+    const { renderScene, isSwiping, lazyOnSwipe } = this.props;
+    const { loaded } = this.state;
+
+    const mustBeVisible = this._mustBeVisible(props);
+
+    if (!loaded.includes(index) && !mustBeVisible) {
+      return null;
+    }
+
+    return (
+      <ResourceSavingScene isVisible={mustBeVisible}>
+        {renderScene({ route })}
+      </ResourceSavingScene>
+    );
   };
 
   render() {
