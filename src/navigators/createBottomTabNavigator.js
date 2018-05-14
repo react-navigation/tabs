@@ -1,23 +1,10 @@
-/* @flow */
-
-import * as React from 'react';
+import React from 'react';
 import { View, StyleSheet } from 'react-native';
-import createTabNavigator, {
-  type InjectedProps,
-} from '../utils/createTabNavigator';
-import BottomTabBar, { type TabBarOptions } from '../views/BottomTabBar';
+import createTabNavigator from '../utils/createTabNavigator';
+import BottomTabBar from '../views/BottomTabBar';
 import ResourceSavingScene from '../views/ResourceSavingScene';
 
-type Props = InjectedProps & {
-  tabBarComponent?: React.ComponentType<*>,
-  tabBarOptions?: TabBarOptions,
-};
-
-type State = {
-  loaded: number[],
-};
-
-class TabNavigationView extends React.PureComponent<Props, State> {
+class TabNavigationView extends React.PureComponent {
   state = {
     loaded: [this.props.navigation.state.index],
   };
@@ -80,7 +67,7 @@ class TabNavigationView extends React.PureComponent<Props, State> {
     );
   };
 
-  _jumpTo = (key: string) => {
+  _jumpTo = (key) => {
     const { navigation, onIndexChange } = this.props;
 
     const index = navigation.state.routes.findIndex(route => route.key === key);
