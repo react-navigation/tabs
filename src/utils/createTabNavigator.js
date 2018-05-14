@@ -6,7 +6,6 @@ import {
   StackActions,
   SceneView,
   createNavigator,
-  createNavigationContainer,
   NavigationActions,
 } from 'react-navigation';
 
@@ -131,6 +130,6 @@ export default function createTabNavigator(TabView: React.ComponentType<*>) {
     const router = TabRouter(routes, config);
     const navigator = createNavigator(NavigationView, router, config);
 
-    return createNavigationContainer(navigator);
+    return navigator;
   };
 }

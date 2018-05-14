@@ -3,9 +3,10 @@
 import * as React from 'react';
 import { Platform } from 'react-native';
 import { TabViewAnimated, TabViewPagerPan } from 'react-native-tab-view';
-import createTabNavigator, {
-  type InjectedProps,
-} from '../utils/createTabNavigator';
+import   createTabNavigatorWithContainer from '../utils/createTabNavigatorWithContainer';
+
+import { type InjectedProps } from '../utils/createTabNavigator';
+
 import MaterialTopTabBar, {
   type TabBarOptions,
 } from '../views/MaterialTopTabBar';
@@ -184,4 +185,4 @@ class TabView extends React.PureComponent<Props> {
   }
 }
 
-export default createTabNavigator(TabView);
+export default createTabNavigatorWithContainer(TabView);
