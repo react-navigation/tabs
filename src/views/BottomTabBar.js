@@ -1,4 +1,3 @@
-/* @flow */
 
 import React from 'react';
 import {
@@ -13,38 +12,13 @@ import SafeAreaView from 'react-native-safe-area-view';
 import CrossFadeIcon from './CrossFadeIcon';
 import withDimensions from '../utils/withDimensions';
 
-export type TabBarOptions = {
-  activeTintColor?: string,
-  inactiveTintColor?: string,
-  activeBackgroundColor?: string,
-  inactiveBackgroundColor?: string,
-  allowFontScaling: boolean,
-  showLabel: boolean,
-  showIcon: boolean,
-  labelStyle: any,
-  tabStyle: any,
-  adaptive?: boolean,
-  style: any,
-};
-
-type Props = TabBarOptions & {
-  navigation: any,
-  descriptors: any,
-  jumpTo: any,
-  onTabPress: any,
-  getLabelText: ({ route: any }) => any,
-  renderIcon: any,
-  dimensions: { width: number, height: number },
-  isLandscape: boolean,
-};
-
 const majorVersion = parseInt(Platform.Version, 10);
 const isIos = Platform.OS === 'ios';
 const isIOS11 = majorVersion >= 11 && isIos;
 
 const DEFAULT_MAX_TAB_ITEM_WIDTH = 125;
 
-class TabBarBottom extends React.Component<Props> {
+class TabBarBottom extends React.Component {
   static defaultProps = {
     activeTintColor: '#3478f6', // Default active tint color in iOS 10
     activeBackgroundColor: 'transparent',

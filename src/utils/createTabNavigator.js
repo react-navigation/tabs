@@ -1,6 +1,4 @@
-/* @flow */
-
-import * as React from 'react';
+import React from 'react';
 import {
   TabRouter,
   StackActions,
@@ -9,23 +7,8 @@ import {
   NavigationActions,
 } from 'react-navigation';
 
-export type InjectedProps = {
-  getLabelText: (props: { route: any }) => any,
-  renderIcon: (props: {
-    route: any,
-    focused: boolean,
-    tintColor: string,
-  }) => React.Node,
-  renderScene: (props: { route: any }) => ?React.Node,
-  onIndexChange: (index: number) => any,
-  onTabPress: (props: { route: any }) => mixed,
-  navigation: any,
-  descriptors: any,
-  screenProps?: any,
-};
-
-export default function createTabNavigator(TabView: React.ComponentType<*>) {
-  class NavigationView extends React.Component<*> {
+export default function createTabNavigator(TabView) {
+  class NavigationView extends React.Component {
     _renderScene = ({ route }) => {
       const { screenProps, descriptors } = this.props;
       const descriptor = descriptors[route.key];
