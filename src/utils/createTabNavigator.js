@@ -27,16 +27,8 @@ export type InjectedProps = {
   screenProps?: any,
 };
 
-type State = {
-  isSwiping: boolean,
-};
-
 export default function createTabNavigator(TabView: React.ComponentType<*>) {
   class NavigationView extends React.Component<*, State> {
-    state = {
-      isSwiping: false,
-    };
-
     _renderScene = ({ route }) => {
       const { screenProps, descriptors } = this.props;
       const descriptor = descriptors[route.key];
@@ -176,9 +168,6 @@ export default function createTabNavigator(TabView: React.ComponentType<*>) {
           navigation={navigation}
           descriptors={descriptors}
           screenProps={screenProps}
-          onSwipeStart={this._handleSwipeStart}
-          onSwipeEnd={this._handleSwipeEnd}
-          isSwiping={this.state.isSwiping}
         />
       );
     }

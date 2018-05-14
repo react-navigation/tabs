@@ -1,10 +1,8 @@
 /* @flow */
 
 import * as React from 'react';
-
-import { Platform, InteractionManager } from 'react-native';
+import { Platform } from 'react-native';
 import { TabView, PagerPan } from 'react-native-tab-view';
-import { NavigationActions } from 'react-navigation';
 import createTabNavigator, {
   type InjectedProps,
 } from '../utils/createTabNavigator';
@@ -19,14 +17,13 @@ type Props = InjectedProps & {
   tabBarPosition?: 'top' | 'bottom',
   tabBarComponent?: React.ComponentType<*>,
   tabBarOptions?: TabBarOptions,
-  lazyOnSwipe: boolean,
-  sceneAlwaysVisible: boolean,
-  isSwiping: boolean,
 };
 
 type State = {
+  index: number,
+  isSwiping: boolean,
   loaded: Array<number>,
-  transitioningFromIndex: ?boolean,
+  transitioningFromIndex: ?number,
 };
 
 class MaterialTabView extends React.PureComponent<Props> {
@@ -35,18 +32,30 @@ class MaterialTabView extends React.PureComponent<Props> {
     initialLayout: Platform.select({
       android: { width: 1, height: 0 },
     }),
-    lazyOnSwipe: true,
-    sceneAlwaysVisible: true,
+    animationEnabled: true,
   };
 
+  static getDerivedStateFromProps(nextProps, prevState) {
+    const { index } = nextProps.navigation.state;
+
+    if (prevState.index === index) {
+      return null;
+    }
+
+    return {
+      loaded: prevState.loaded.includes(index)
+        ? prevState.loaded
+        : [...prevState.loaded, index],
+      index,
+    };
+  }
+
   state = {
+    index: 0,
+    isSwiping: false,
     loaded: [this.props.navigation.state.index],
     transitioningFromIndex: null,
   };
-
-  // eslint-disable-next-line react/sort-comp
-  _transitionTimeout = null;
-  _actionListener = null;
 
   _getLabel = ({ route, tintColor, focused }) => {
     const { descriptors } = this.props;
@@ -119,72 +128,46 @@ class MaterialTabView extends React.PureComponent<Props> {
 
   _renderPanPager = props => <PagerPan {...props} />;
 
-  componentWillMount() {
-    const { animationEnabled } = this.props;
+  _handleAnimationEnd = () => {
+    this.setState({
+      transitioningFromIndex: null,
+      isSwiping: false,
+    });
+  };
 
-    // We rely on action listener to animate from the current index to the next one, no need to listen without animation
-    if (animationEnabled) {
-      this._actionListener = this.props.navigation.addListener(
-        'action',
-        this._onAction
-      );
-    }
-  }
+  _handleSwipeStart = () => {
+    const { navigation } = this.props;
 
-  componentWillUnmount() {
-    if (this._actionListener) {
-      this._actionListener.remove();
-    }
+    this.setState({
+      isSwiping: true,
+      loaded: [
+        ...new Set([
+          ...this.state.loaded,
+          Math.max(navigation.state.index - 1, 0),
+          Math.min(
+            navigation.state.index + 1,
+            navigation.state.routes.length - 1
+          ),
+        ]),
+      ],
+    });
+  };
 
-    if (this._transitionTimeout) {
-      clearTimeout(this._transitionTimeout);
-    }
-  }
+  _handleIndexChange = index => {
+    const { navigation, onIndexChange } = this.props;
 
-  componentWillReceiveProps(nextProps) {
-    if (
-      nextProps.navigation.state.index !== this.props.navigation.state.index
-    ) {
-      const { index } = nextProps.navigation.state;
+    this.setState({
+      transitioningFromIndex: navigation.state.index || 0,
+    });
 
-      this.setState(state => ({
-        loaded: state.loaded.includes(index)
-          ? state.loaded
-          : [...state.loaded, index],
-      }));
-    }
-  }
-
-  _onAction = payload => {
-    if (payload.action.type === NavigationActions.NAVIGATE) {
-      this.setState({
-        transitioningFromIndex:
-          (payload.lastState && payload.lastState.index) || 0,
-      });
-    } else if (payload.action.type === 'Navigation/COMPLETE_TRANSITION') {
-      InteractionManager.runAfterInteractions(() => {
-        // Prevent white screen flickering
-        this._transitionTimeout = setTimeout(
-          () => this.setState({ transitioningFromIndex: null }),
-          100
-        );
-      });
-    }
+    onIndexChange(index);
   };
 
   _mustBeVisible = ({ index, focused }) => {
-    const {
-      animationEnabled,
-      navigation,
-      isSwiping,
-      lazyOnSwipe,
-      sceneAlwaysVisible,
-    } = this.props;
-    const { transitioningFromIndex, loaded } = this.state;
+    const { animationEnabled, navigation } = this.props;
+    const { isSwiping, transitioningFromIndex } = this.state;
 
-    const isLoaded = loaded.includes(index);
-
-    if (isSwiping && (lazyOnSwipe || isLoaded)) {
+    if (isSwiping) {
       const isSibling =
         navigation.state.index === index - 1 ||
         navigation.state.index === index + 1;
@@ -195,11 +178,7 @@ class MaterialTabView extends React.PureComponent<Props> {
     }
 
     // The previous tab should remain visible while transitioning
-    if (
-      animationEnabled &&
-      ((isLoaded && sceneAlwaysVisible && transitioningFromIndex != null) ||
-        transitioningFromIndex === index)
-    ) {
+    if (animationEnabled && transitioningFromIndex === index) {
       return true;
     }
 
@@ -230,6 +209,8 @@ class MaterialTabView extends React.PureComponent<Props> {
       animationEnabled,
       // eslint-disable-next-line no-unused-vars
       renderScene,
+      // eslint-disable-next-line no-unused-vars
+      onIndexChange,
       ...rest
     } = this.props;
 
@@ -260,6 +241,9 @@ class MaterialTabView extends React.PureComponent<Props> {
         navigationState={navigation.state}
         animationEnabled={animationEnabled}
         swipeEnabled={swipeEnabled}
+        onAnimationEnd={this._handleAnimationEnd}
+        onIndexChange={this._handleIndexChange}
+        onSwipeStart={this._handleSwipeStart}
         renderPager={renderPager}
         renderTabBar={this._renderTabBar}
         renderScene={
