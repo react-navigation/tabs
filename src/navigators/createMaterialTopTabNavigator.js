@@ -45,12 +45,38 @@ class TabView extends React.PureComponent<Props> {
     return route.routeName;
   };
 
-  _getOnPress = (previousScene, { route }) => {
+  _onTabPressNeeded() {
+    const { descriptors } = this.props;
+    for (let key in descriptors) {
+      const descriptor = descriptors[key];
+      const options = descriptor.options;
+      if (options.tabBarOnPress) {
+        return true;
+      }
+    }
+    return false;
+  };
+
+  _getOnPress() {
+    if (!this._onTabPressNeeded()) {
+      return null;
+    }
+    return this._onTabPress;
+  };
+
+  _onTabPress = ({ route, focused }) => {
     const { descriptors } = this.props;
     const descriptor = descriptors[route.key];
     const options = descriptor.options;
-
-    return options.tabBarOnPress;
+    if (!options.tabBarOnPress) {
+      return;
+    }
+    const { navigation } = descriptor;
+    const navigationStaticFocus = {
+      ...navigation,
+      isFocused: () => focused,
+    };
+    options.tabBarOnPress({ navigation: navigationStaticFocus });
   };
 
   _getTestIDProps = ({ route, focused }) => {
@@ -107,6 +133,7 @@ class TabView extends React.PureComponent<Props> {
         getLabelText={this.props.getLabelText}
         getTestIDProps={this._getTestIDProps}
         renderIcon={this._renderIcon}
+        onTabPress={this._getOnPress()}
       />
     );
   };
