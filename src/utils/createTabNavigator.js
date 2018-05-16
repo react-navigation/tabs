@@ -70,19 +70,16 @@ export default function createTabNavigator(TabView: React.ComponentType<*>) {
       return route.routeName;
     };
 
-    _handleOnTabPress = ({ route, focused }) => {
+    _handleOnTabPress = ({ route }) => {
       const { descriptors } = this.props;
       const descriptor = descriptors[route.key];
       const { navigation, options } = descriptor;
+      const focused =
+        this.props.navigation.state.index ===
+        this.props.navigation.state.routes.indexOf(route);
 
       if (options.tabBarOnPress) {
-        const navigationStaticFocus = {
-          ...navigation,
-          isFocused: () => focused,
-        };
-        options.tabBarOnPress({
-          navigation: navigationStaticFocus,
-        });
+        options.tabBarOnPress({ navigation });
       } else if (focused && route.hasOwnProperty('index') && route.index > 0) {
         navigation.dispatch(StackActions.popToTop({ key: route.key }));
       } else if (focused) {
