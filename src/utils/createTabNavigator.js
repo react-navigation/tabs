@@ -74,9 +74,7 @@ export default function createTabNavigator(TabView: React.ComponentType<*>) {
       const { descriptors } = this.props;
       const descriptor = descriptors[route.key];
       const { navigation, options } = descriptor;
-      const focused =
-        this.props.navigation.state.index ===
-        this.props.navigation.state.routes.indexOf(route);
+      const focused = navigation.isFocused();
 
       if (options.tabBarOnPress) {
         options.tabBarOnPress({ navigation });
