@@ -49,6 +49,16 @@ class TabNavigationView extends React.PureComponent<Props, State> {
     return label;
   };
 
+  _getTestIDProps = ({ route, focused }) => {
+    const { descriptors } = this.props;
+    const descriptor = descriptors[route.key];
+    const options = descriptor.options;
+
+    return typeof options.tabBarTestIDProps === 'function'
+      ? options.tabBarTestIDProps({ focused })
+      : options.tabBarTestIDProps;
+  };
+
   _renderTabBar = () => {
     const {
       tabBarComponent: TabBarComponent = BottomTabBar,
@@ -78,6 +88,7 @@ class TabNavigationView extends React.PureComponent<Props, State> {
         screenProps={screenProps}
         onTabPress={onTabPress}
         getLabelText={getLabelText}
+        getTestIDProps={this._getTestIDProps}
         renderIcon={renderIcon}
       />
     );
