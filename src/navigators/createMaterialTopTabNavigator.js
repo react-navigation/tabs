@@ -45,16 +45,6 @@ class TabView extends React.PureComponent<Props> {
     return route.routeName;
   };
 
-  _getTestIDProps = ({ route, focused }) => {
-    const { descriptors } = this.props;
-    const descriptor = descriptors[route.key];
-    const options = descriptor.options;
-
-    return typeof options.tabBarTestIDProps === 'function'
-      ? options.tabBarTestIDProps({ focused })
-      : options.tabBarTestIDProps;
-  };
-
   _renderIcon = ({ focused, route, tintColor }) => {
     const { descriptors } = this.props;
     const descriptor = descriptors[route.key];
@@ -97,7 +87,8 @@ class TabView extends React.PureComponent<Props> {
         screenProps={this.props.screenProps}
         navigation={this.props.navigation}
         getLabelText={this.props.getLabelText}
-        getTestIDProps={this._getTestIDProps}
+        getAccessibilityLabelText={this.props.getAccessibilityLabelText}
+        getTestID={this.props.getTestID}
         renderIcon={this._renderIcon}
         onTabPress={this.props.onTabPress}
       />
