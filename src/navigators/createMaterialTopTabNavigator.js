@@ -1,7 +1,8 @@
 /* @flow */
 
 import * as React from 'react';
-import { Platform } from 'react-native';
+import { View, Platform } from 'react-native';
+import { polyfill } from 'react-lifecycles-compat';
 import { TabView, PagerPan } from 'react-native-tab-view';
 import createTabNavigator, {
   type InjectedProps,
@@ -13,10 +14,12 @@ import ResourceSavingScene from '../views/ResourceSavingScene';
 
 type Props = InjectedProps & {
   animationEnabled?: boolean,
+  lazy?: boolean,
+  optimizationsEnabled?: boolean,
   swipeEnabled?: boolean,
-  tabBarPosition?: 'top' | 'bottom',
   tabBarComponent?: React.ComponentType<*>,
   tabBarOptions?: TabBarOptions,
+  tabBarPosition?: 'top' | 'bottom',
 };
 
 type State = {
@@ -33,6 +36,8 @@ class MaterialTabView extends React.PureComponent<Props> {
       android: { width: 1, height: 0 },
     }),
     animationEnabled: true,
+    lazy: true,
+    optimizationsEnabled: false,
   };
 
   static getDerivedStateFromProps(nextProps, prevState) {
@@ -129,36 +134,44 @@ class MaterialTabView extends React.PureComponent<Props> {
   _renderPanPager = props => <PagerPan {...props} />;
 
   _handleAnimationEnd = () => {
-    this.setState({
-      transitioningFromIndex: null,
-      isSwiping: false,
-    });
+    const { lazy } = this.props;
+
+    if (lazy) {
+      this.setState({
+        transitioningFromIndex: null,
+        isSwiping: false,
+      });
+    }
   };
 
   _handleSwipeStart = () => {
-    const { navigation } = this.props;
+    const { navigation, lazy } = this.props;
 
-    this.setState({
-      isSwiping: true,
-      loaded: [
-        ...new Set([
-          ...this.state.loaded,
-          Math.max(navigation.state.index - 1, 0),
-          Math.min(
-            navigation.state.index + 1,
-            navigation.state.routes.length - 1
-          ),
-        ]),
-      ],
-    });
+    if (lazy) {
+      this.setState({
+        isSwiping: true,
+        loaded: [
+          ...new Set([
+            ...this.state.loaded,
+            Math.max(navigation.state.index - 1, 0),
+            Math.min(
+              navigation.state.index + 1,
+              navigation.state.routes.length - 1
+            ),
+          ]),
+        ],
+      });
+    }
   };
 
   _handleIndexChange = index => {
-    const { navigation, onIndexChange } = this.props;
+    const { animationEnabled, navigation, onIndexChange, lazy } = this.props;
 
-    this.setState({
-      transitioningFromIndex: navigation.state.index || 0,
-    });
+    if (lazy && animationEnabled) {
+      this.setState({
+        transitioningFromIndex: navigation.state.index || 0,
+      });
+    }
 
     onIndexChange(index);
   };
@@ -185,22 +198,36 @@ class MaterialTabView extends React.PureComponent<Props> {
     return focused;
   };
 
-  _renderScene = props => {
-    const { index, route } = props;
-    const { renderScene } = this.props;
-    const { loaded } = this.state;
+  _renderScene = ({ route }) => {
+    const {
+      renderScene,
+      descriptors,
+      lazy,
+      optimizationsEnabled,
+    } = this.props;
 
-    const mustBeVisible = this._mustBeVisible(props);
+    if (lazy) {
+      const { loaded } = this.state;
+      const { routes } = this.props.navigation.state;
+      const index = routes.findIndex(({ key }) => key === route.key);
+      const { navigation } = descriptors[route.key];
 
-    if (!loaded.includes(index) && !mustBeVisible) {
-      return null;
+      const mustBeVisible = this._mustBeVisible({ index, focused: navigation.isFocused()});
+
+      if (!loaded.includes(index) && !mustBeVisible) {
+        return <View />;
+      }
+
+      if (optimizationsEnabled) {
+        return (
+          <ResourceSavingScene isVisible={mustBeVisible}>
+            {renderScene({ route })}
+          </ResourceSavingScene>
+        );
+      }
     }
 
-    return (
-      <ResourceSavingScene isVisible={mustBeVisible}>
-        {renderScene({ route })}
-      </ResourceSavingScene>
-    );
+    return renderScene({ route });
   };
 
   render() {
@@ -254,5 +281,7 @@ class MaterialTabView extends React.PureComponent<Props> {
     );
   }
 }
+
+polyfill(MaterialTabView);
 
 export default createTabNavigator(MaterialTabView);
