@@ -47,7 +47,7 @@ const isIOS11 = majorVersion >= 11 && isIos;
 
 const DEFAULT_MAX_TAB_ITEM_WIDTH = 125;
 
-class TouchableWithoutFeedbackWrapper extends React.Component {
+class TouchableWithoutFeedbackWrapper extends React.Component<*> {
   render() {
     const { onPress, testID, accessibilityLabel, ...props } = this.props;
 
@@ -188,7 +188,6 @@ class TabBarBottom extends React.Component<Props> {
       activeBackgroundColor,
       inactiveBackgroundColor,
       onTabPress,
-      jumpTo,
       style,
       tabStyle,
     } = this.props;

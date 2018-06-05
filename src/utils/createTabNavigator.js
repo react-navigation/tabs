@@ -14,6 +14,7 @@ export type InjectedProps = {
   getLabelText: (props: { route: any }) => any,
   getAccessibilityLabel: (props: { route: any }) => string,
   getTestID: (props: { route: any }) => string,
+  getButtonComponent: (props: { route: any }) => ?React.Component<*>,
   renderIcon: (props: {
     route: any,
     focused: boolean,
@@ -66,7 +67,7 @@ export default function createTabNavigator(TabView: React.ComponentType<*>) {
       }
 
       return null;
-    }
+    };
 
     _getLabelText = ({ route }) => {
       const { descriptors } = this.props;
