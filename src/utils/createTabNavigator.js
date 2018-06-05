@@ -56,6 +56,18 @@ export default function createTabNavigator(TabView: React.ComponentType<*>) {
       return null;
     };
 
+    _getButtonComponent = ({ route }) => {
+      const { descriptors } = this.props;
+      const descriptor = descriptors[route.key];
+      const options = descriptor.options;
+
+      if (options.tabBarButtonComponent) {
+        return options.tabBarButtonComponent;
+      }
+
+      return null;
+    }
+
     _getLabelText = ({ route }) => {
       const { descriptors } = this.props;
       const descriptor = descriptors[route.key];
@@ -151,6 +163,7 @@ export default function createTabNavigator(TabView: React.ComponentType<*>) {
         <TabView
           {...options}
           getLabelText={this._getLabelText}
+          getButtonComponent={this._getButtonComponent}
           getAccessibilityLabel={this._getAccessibilityLabel}
           getTestID={this._getTestID}
           renderIcon={this._renderIcon}
