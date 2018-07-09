@@ -26,6 +26,7 @@ export type InjectedProps = {
   navigation: any,
   descriptors: any,
   screenProps?: any,
+  swipeEnabled?: boolean,
 };
 
 export default function createTabNavigator(TabView: React.ComponentType<*>) {
@@ -151,7 +152,7 @@ export default function createTabNavigator(TabView: React.ComponentType<*>) {
     _isTabPress: boolean = false;
 
     render() {
-      const { descriptors, navigation, screenProps } = this.props;
+      const { descriptors, navigation, screenProps, swipeEnabled } = this.props;
       const { state } = navigation;
       const route = state.routes[state.index];
       const descriptor = descriptors[route.key];
@@ -174,6 +175,7 @@ export default function createTabNavigator(TabView: React.ComponentType<*>) {
           navigation={navigation}
           descriptors={descriptors}
           screenProps={screenProps}
+          swipeEnabled={swipeEnabled}
         />
       );
     }
