@@ -17,6 +17,7 @@ type Props = InjectedProps & {
   tabBarPosition?: 'top' | 'bottom',
   tabBarComponent?: React.ComponentType<*>,
   tabBarOptions?: TabBarOptions,
+  removeClippedSubviews?: boolean,
 };
 
 class MaterialTabView extends React.PureComponent<Props> {
@@ -25,6 +26,7 @@ class MaterialTabView extends React.PureComponent<Props> {
     initialLayout: Platform.select({
       android: { width: 1, height: 0 },
     }),
+    removeClippedSubviews: true,
   };
 
   _renderIcon = ({ focused, route, tintColor }) => {
@@ -86,13 +88,17 @@ class MaterialTabView extends React.PureComponent<Props> {
       animationEnabled,
       swipeEnabled,
       descriptors,
+      removeClippedSubviews,
     } = this.props;
 
     if (animationEnabled === false && swipeEnabled === false) {
       const { navigation } = descriptors[route.key];
 
       return (
-        <ResourceSavingScene isFocused={navigation.isFocused()}>
+        <ResourceSavingScene
+          removeClippedSubviews={removeClippedSubviews}
+          isFocused={navigation.isFocused()}
+        >
           {renderScene({ route })}
         </ResourceSavingScene>
       );
