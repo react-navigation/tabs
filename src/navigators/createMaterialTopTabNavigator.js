@@ -36,7 +36,7 @@ class MaterialTabView extends React.PureComponent<Props> {
       android: { width: 1, height: 0 },
     }),
     animationEnabled: true,
-    lazy: true,
+    lazy: false,
     optimizationsEnabled: false,
   };
 
