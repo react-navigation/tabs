@@ -23,6 +23,7 @@ export type TabBarOptions = {
   showIcon: boolean,
   labelStyle: any,
   tabStyle: any,
+  middleItemStyle?: any,
   adaptive?: boolean,
   style: any,
 };
@@ -40,6 +41,7 @@ type Props = TabBarOptions & {
   dimensions: { width: number, height: number },
   isLandscape: boolean,
   safeAreaInset: { top: string, right: string, bottom: string, left: string },
+  hasMiddleItem: boolean,
 };
 
 const majorVersion = parseInt(Platform.Version, 10);
@@ -75,6 +77,7 @@ class TabBarBottom extends React.Component<Props> {
     allowFontScaling: true,
     adaptive: isIOS11,
     safeAreaInset: { bottom: 'always', top: 'never' },
+    hasMiddleItem: false,
   };
 
   _renderLabel = ({ route, focused }) => {
@@ -184,16 +187,55 @@ class TabBarBottom extends React.Component<Props> {
     }
   };
 
-  render() {
+  _renderRoute = (route, index, isMiddle) => {
     const {
       navigation,
       activeBackgroundColor,
       inactiveBackgroundColor,
       onTabPress,
-      safeAreaInset,
-      style,
       tabStyle,
+      middleItemStyle,
     } = this.props;
+
+    const focused = index === navigation.state.index;
+    const scene = { route, focused };
+    const accessibilityLabel = this.props.getAccessibilityLabel({
+      route,
+    });
+    const testID = this.props.getTestID({ route });
+
+    const backgroundColor = focused
+      ? activeBackgroundColor
+      : inactiveBackgroundColor;
+
+    const ButtonComponent =
+      this.props.getButtonComponent({ route }) ||
+      TouchableWithoutFeedbackWrapper;
+
+    return (
+      <ButtonComponent
+        key={route.key}
+        onPress={() => onTabPress({ route })}
+        testID={testID}
+        accessibilityLabel={accessibilityLabel}
+        style={[
+          styles.tab,
+          { backgroundColor },
+          this._shouldUseHorizontalLabels()
+            ? styles.tabLandscape
+            : styles.tabPortrait,
+          tabStyle,
+          isMiddle ? middleItemStyle : null,
+        ]}
+      >
+        {this._renderIcon(scene)}
+        {this._renderLabel(scene)}
+      </ButtonComponent>
+    );
+  };
+
+  render() {
+    const { navigation, safeAreaInset, style, hasMiddleItem } = this.props;
 
     const { routes } = navigation.state;
 
@@ -205,47 +247,26 @@ class TabBarBottom extends React.Component<Props> {
       style,
     ];
 
+    const middleItemIndex = Math.floor(routes.length / 2);
+    const routesWithoutMiddleItem = routes.filter(
+      (value, index) => hasMiddleItem && index !== middleItemIndex
+    );
+    const halfLength = Math.ceil(routesWithoutMiddleItem.length / 2);
+    const leftRoutes = routesWithoutMiddleItem.splice(0, halfLength);
+    const rightRoutes = routesWithoutMiddleItem;
     return (
-      <SafeAreaView
-        style={tabBarStyle}
-        forceInset={safeAreaInset}
-      >
-        {routes.map((route, index) => {
-          const focused = index === navigation.state.index;
-          const scene = { route, focused };
-          const accessibilityLabel = this.props.getAccessibilityLabel({
-            route,
-          });
-          const testID = this.props.getTestID({ route });
-
-          const backgroundColor = focused
-            ? activeBackgroundColor
-            : inactiveBackgroundColor;
-
-          const ButtonComponent =
-            this.props.getButtonComponent({ route }) ||
-            TouchableWithoutFeedbackWrapper;
-
-          return (
-            <ButtonComponent
-              key={route.key}
-              onPress={() => onTabPress({ route })}
-              testID={testID}
-              accessibilityLabel={accessibilityLabel}
-              style={[
-                styles.tab,
-                { backgroundColor },
-                this._shouldUseHorizontalLabels()
-                  ? styles.tabLandscape
-                  : styles.tabPortrait,
-                tabStyle,
-              ]}
-            >
-              {this._renderIcon(scene)}
-              {this._renderLabel(scene)}
-            </ButtonComponent>
-          );
-        })}
+      <SafeAreaView style={tabBarStyle} forceInset={safeAreaInset}>
+        {hasMiddleItem
+          ? [
+              leftRoutes.map((route, index) =>
+                this._renderRoute(route, index, false)
+              ),
+              this._renderRoute(routes[middleItemIndex], middleItemIndex, true),
+              rightRoutes.map((route, index) =>
+                this._renderRoute(route, leftRoutes.length + 1 + index, false)
+              ),
+            ]
+          : routes.map((route, index) => this._renderRoute(route, index))}
       </SafeAreaView>
     );
   }

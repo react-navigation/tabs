@@ -3,6 +3,7 @@ import Expo from 'expo';
 import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
 import { createStackNavigator } from 'react-navigation';
 import BottomTabs from './src/BottomTabs';
+import BottomTabsWithMiddleButton from './src/BottomTabsWithMiddleButton';
 import MaterialTopTabs from './src/MaterialTopTabs';
 
 class Home extends React.Component {
@@ -14,6 +15,14 @@ class Home extends React.Component {
           onPress={() => this.props.navigation.push('BottomTabs')}
         >
           <Text>Bottom tabs</Text>
+        </TouchableOpacity>
+        <TouchableOpacity
+          style={styles.item}
+          onPress={() =>
+            this.props.navigation.push('BottomTabsWithMiddleButton')
+          }
+        >
+          <Text>Bottom tabs with middle button</Text>
         </TouchableOpacity>
         <TouchableOpacity
           style={styles.item}
@@ -34,6 +43,10 @@ const App = createStackNavigator({
   BottomTabs: {
     screen: BottomTabs,
     navigationOptions: { title: 'Bottom tabs' },
+  },
+  BottomTabsWithMiddleButton: {
+    screen: BottomTabsWithMiddleButton,
+    navigationOptions: { title: 'Bottom tabs with middle button' },
   },
   MaterialTopTabs: {
     screen: MaterialTopTabs,
