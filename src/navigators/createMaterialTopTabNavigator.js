@@ -1,7 +1,8 @@
 /* @flow */
 
 import * as React from 'react';
-import { Platform } from 'react-native';
+import { View, Platform } from 'react-native';
+import { polyfill } from 'react-lifecycles-compat';
 import { TabView, PagerPan } from 'react-native-tab-view';
 import createTabNavigator, {
   type InjectedProps,
@@ -13,11 +14,20 @@ import ResourceSavingScene from '../views/ResourceSavingScene';
 
 type Props = InjectedProps & {
   animationEnabled?: boolean,
+  lazy?: boolean,
+  optimizationsEnabled?: boolean,
+  removeClippedSubviews?: boolean,
   swipeEnabled?: boolean,
-  tabBarPosition?: 'top' | 'bottom',
   tabBarComponent?: React.ComponentType<*>,
   tabBarOptions?: TabBarOptions,
-  removeClippedSubviews?: boolean,
+  tabBarPosition?: 'top' | 'bottom',
+};
+
+type State = {
+  index: number,
+  isSwiping: boolean,
+  loaded: Array<number>,
+  transitioningFromIndex: ?number,
 };
 
 class MaterialTabView extends React.PureComponent<Props> {
@@ -26,7 +36,32 @@ class MaterialTabView extends React.PureComponent<Props> {
     initialLayout: Platform.select({
       android: { width: 1, height: 0 },
     }),
+    animationEnabled: true,
+    lazy: false,
+    optimizationsEnabled: false,
     removeClippedSubviews: true,
+  };
+
+  static getDerivedStateFromProps(nextProps, prevState) {
+    const { index } = nextProps.navigation.state;
+
+    if (prevState.index === index) {
+      return null;
+    }
+
+    return {
+      loaded: prevState.loaded.includes(index)
+        ? prevState.loaded
+        : [...prevState.loaded, index],
+      index,
+    };
+  }
+
+  state = {
+    index: 0,
+    isSwiping: false,
+    loaded: [this.props.navigation.state.index],
+    transitioningFromIndex: null,
   };
 
   _renderIcon = ({ focused, route, tintColor }) => {
@@ -82,26 +117,105 @@ class MaterialTabView extends React.PureComponent<Props> {
 
   _renderPanPager = props => <PagerPan {...props} />;
 
+  _handleAnimationEnd = () => {
+    const { lazy } = this.props;
+
+    if (lazy) {
+      this.setState({
+        transitioningFromIndex: null,
+        isSwiping: false,
+      });
+    }
+  };
+
+  _handleSwipeStart = () => {
+    const { navigation, lazy } = this.props;
+
+    if (lazy) {
+      this.setState({
+        isSwiping: true,
+        loaded: [
+          ...new Set([
+            ...this.state.loaded,
+            Math.max(navigation.state.index - 1, 0),
+            Math.min(
+              navigation.state.index + 1,
+              navigation.state.routes.length - 1
+            ),
+          ]),
+        ],
+      });
+    }
+  };
+
+  _handleIndexChange = index => {
+    const { animationEnabled, navigation, onIndexChange, lazy } = this.props;
+
+    if (lazy && animationEnabled) {
+      this.setState({
+        transitioningFromIndex: navigation.state.index || 0,
+      });
+    }
+
+    onIndexChange(index);
+  };
+
+  _mustBeVisible = ({ index, focused }) => {
+    const { animationEnabled, navigation } = this.props;
+    const { isSwiping, transitioningFromIndex } = this.state;
+
+    if (isSwiping) {
+      const isSibling =
+        navigation.state.index === index - 1 ||
+        navigation.state.index === index + 1;
+
+      if (isSibling) {
+        return true;
+      }
+    }
+
+    // The previous tab should remain visible while transitioning
+    if (animationEnabled && transitioningFromIndex === index) {
+      return true;
+    }
+
+    return focused;
+  };
+
   _renderScene = ({ route }) => {
     const {
       renderScene,
-      animationEnabled,
-      swipeEnabled,
       descriptors,
+      lazy,
+      optimizationsEnabled,
       removeClippedSubviews,
     } = this.props;
 
-    if (animationEnabled === false && swipeEnabled === false) {
+    if (lazy) {
+      const { loaded } = this.state;
+      const { routes } = this.props.navigation.state;
+      const index = routes.findIndex(({ key }) => key === route.key);
       const { navigation } = descriptors[route.key];
 
-      return (
-        <ResourceSavingScene
-          removeClippedSubviews={removeClippedSubviews}
-          isFocused={navigation.isFocused()}
-        >
-          {renderScene({ route })}
-        </ResourceSavingScene>
-      );
+      const mustBeVisible = this._mustBeVisible({
+        index,
+        focused: navigation.isFocused(),
+      });
+
+      if (!loaded.includes(index) && !mustBeVisible) {
+        return <View />;
+      }
+
+      if (optimizationsEnabled) {
+        return (
+          <ResourceSavingScene
+            isVisible={mustBeVisible}
+            removeClippedSubviews={removeClippedSubviews}
+          >
+            {renderScene({ route })}
+          </ResourceSavingScene>
+        );
+      }
     }
 
     return renderScene({ route });
@@ -113,6 +227,8 @@ class MaterialTabView extends React.PureComponent<Props> {
       animationEnabled,
       // eslint-disable-next-line no-unused-vars
       renderScene,
+      // eslint-disable-next-line no-unused-vars
+      onIndexChange,
       ...rest
     } = this.props;
 
@@ -143,6 +259,9 @@ class MaterialTabView extends React.PureComponent<Props> {
         navigationState={navigation.state}
         animationEnabled={animationEnabled}
         swipeEnabled={swipeEnabled}
+        onAnimationEnd={this._handleAnimationEnd}
+        onIndexChange={this._handleIndexChange}
+        onSwipeStart={this._handleSwipeStart}
         renderPager={renderPager}
         renderTabBar={this._renderTabBar}
         renderScene={
@@ -153,5 +272,7 @@ class MaterialTabView extends React.PureComponent<Props> {
     );
   }
 }
+
+polyfill(MaterialTabView);
 
 export default createTabNavigator(MaterialTabView);

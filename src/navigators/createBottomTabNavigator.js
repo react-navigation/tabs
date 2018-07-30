@@ -112,7 +112,7 @@ class TabNavigationView extends React.PureComponent<Props, State> {
                   StyleSheet.absoluteFill,
                   { opacity: isFocused ? 1 : 0 },
                 ]}
-                isFocused={isFocused}
+                isVisible={isFocused}
                 removeClippedSubviews={removeClippedSubviews}
               >
                 {renderScene({ route })}
