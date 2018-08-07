@@ -30,7 +30,7 @@ type State = {
   transitioningFromIndex: ?number,
 };
 
-class MaterialTabView extends React.PureComponent<Props> {
+class MaterialTabView extends React.PureComponent<Props, State> {
   static defaultProps = {
     // fix for https://github.com/react-native-community/react-native-tab-view/issues/312
     initialLayout: Platform.select({
@@ -118,7 +118,7 @@ class MaterialTabView extends React.PureComponent<Props> {
   _renderPanPager = props => <PagerPan {...props} />;
 
   _handleAnimationEnd = () => {
-    const { lazy } = this.props;
+    const { lazy } = this.props;
 
     if (lazy) {
       this.setState({
