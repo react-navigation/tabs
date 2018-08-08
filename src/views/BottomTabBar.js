@@ -151,7 +151,10 @@ class TabBarBottom extends React.Component<Props> {
         style={[
           styles.iconWithExplicitHeight,
           showLabel === false && !horizontal && styles.iconWithoutLabel,
-          showLabel !== false && !horizontal && styles.iconWithLabel,
+          showLabel !== false && (horizontal
+            ? styles.horizontalIconWithLabel
+            : styles.iconWithLabel
+          ),
         ]}
       />
     );
@@ -281,6 +284,10 @@ const styles = StyleSheet.create({
   },
   iconWithLabel: {
     flex: 1,
+  },
+  horizontalIconWithLabel: {
+    width: COMPACT_HEIGHT,
+    marginRight: 4,
   },
   iconWithExplicitHeight: {
     height: Platform.isPad ? DEFAULT_HEIGHT : COMPACT_HEIGHT,
