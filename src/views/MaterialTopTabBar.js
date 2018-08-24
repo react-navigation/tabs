@@ -10,6 +10,7 @@ export type TabBarOptions = {
   inactiveTintColor?: string,
   showLabel?: boolean,
   showIcon?: boolean,
+  tabKeyToHideLabel?: string,
   upperCaseLabel?: boolean,
   labelStyle?: any,
   iconStyle?: any,
@@ -51,12 +52,13 @@ export default class TabBarTop extends React.PureComponent<Props> {
       activeTintColor,
       inactiveTintColor,
       showLabel,
+      tabKeyToHideLabel,
       upperCaseLabel,
       labelStyle,
       allowFontScaling,
     } = this.props;
 
-    if (showLabel === false) {
+    if (showLabel === false || route.key === tabKeyToHideLabel) {
       return null;
     }
 
