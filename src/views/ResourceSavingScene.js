@@ -6,7 +6,7 @@ import { Platform, StyleSheet, View } from 'react-native';
 type Props = {
   isVisible: boolean,
   children: React.Node,
-  removeClippedSubviews?: boolean,
+  optimizationsEnabled?: boolean,
   style?: any,
 };
 
@@ -16,7 +16,7 @@ export default class ResourceSavingScene extends React.Component<Props> {
   render() {
     const {
       isVisible,
-      removeClippedSubviews,
+      optimizationsEnabled,
       children,
       style,
       ...rest
@@ -30,8 +30,8 @@ export default class ResourceSavingScene extends React.Component<Props> {
           // On iOS, set removeClippedSubviews to true only when not focused
           // This is an workaround for a bug where the clipped view never re-appears
           Platform.OS === 'ios'
-            ? !isVisible && removeClippedSubviews
-            : removeClippedSubviews
+            ? !isVisible && optimizationsEnabled
+            : optimizationsEnabled
         }
         pointerEvents={isVisible ? 'auto' : 'none'}
         {...rest}
