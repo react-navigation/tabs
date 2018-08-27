@@ -16,7 +16,6 @@ type Props = InjectedProps & {
   animationEnabled?: boolean,
   lazy?: boolean,
   optimizationsEnabled?: boolean,
-  removeClippedSubviews?: boolean,
   swipeEnabled?: boolean,
   tabBarComponent?: React.ComponentType<*>,
   tabBarOptions?: TabBarOptions,
@@ -39,7 +38,6 @@ class MaterialTabView extends React.PureComponent<Props, State> {
     animationEnabled: true,
     lazy: false,
     optimizationsEnabled: false,
-    removeClippedSubviews: true,
   };
 
   static getDerivedStateFromProps(nextProps, prevState) {
@@ -183,13 +181,7 @@ class MaterialTabView extends React.PureComponent<Props, State> {
   };
 
   _renderScene = ({ route }) => {
-    const {
-      renderScene,
-      descriptors,
-      lazy,
-      optimizationsEnabled,
-      removeClippedSubviews,
-    } = this.props;
+    const { renderScene, descriptors, lazy, optimizationsEnabled } = this.props;
 
     if (lazy) {
       const { loaded } = this.state;
@@ -208,10 +200,7 @@ class MaterialTabView extends React.PureComponent<Props, State> {
 
       if (optimizationsEnabled) {
         return (
-          <ResourceSavingScene
-            isVisible={mustBeVisible}
-            removeClippedSubviews={removeClippedSubviews}
-          >
+          <ResourceSavingScene isVisible={mustBeVisible}>
             {renderScene({ route })}
           </ResourceSavingScene>
         );
