@@ -13,6 +13,7 @@ type Props = InjectedProps & {
   lazy?: boolean,
   tabBarComponent?: React.ComponentType<*>,
   tabBarOptions?: TabBarOptions,
+  optimizationsEnabled?: boolean,
 };
 
 type State = {
@@ -22,6 +23,7 @@ type State = {
 class TabNavigationView extends React.PureComponent<Props, State> {
   static defaultProps = {
     lazy: true,
+    optimizationsEnabled: true,
   };
 
   static getDerivedStateFromProps(nextProps, prevState) {
@@ -88,7 +90,7 @@ class TabNavigationView extends React.PureComponent<Props, State> {
   };
 
   render() {
-    const { navigation, renderScene, lazy } = this.props;
+    const { navigation, renderScene, lazy, optimizationsEnabled } = this.props;
     const { routes } = navigation.state;
     const { loaded } = this.state;
 
@@ -111,6 +113,7 @@ class TabNavigationView extends React.PureComponent<Props, State> {
                   { opacity: isFocused ? 1 : 0 },
                 ]}
                 isVisible={isFocused}
+                optimizationsEnabled={optimizationsEnabled}
               >
                 {renderScene({ route })}
               </ResourceSavingScene>
