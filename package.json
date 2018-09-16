@@ -3,11 +3,7 @@
   "version": "0.7.0",
   "description": "Tab Navigation components for React Navigation",
   "main": "dist/index.js",
-  "files": [
-    "dist/",
-    "createBottomTabNavigator.js",
-    "createMaterialTopTabNavigator.js"
-  ],
+  "react-native": "src/index.js",
   "scripts": {
     "test": "jest",
     "flow": "flow",
