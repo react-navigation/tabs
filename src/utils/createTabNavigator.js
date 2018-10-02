@@ -143,6 +143,11 @@ export default function createTabNavigator(TabView: React.ComponentType<*>) {
     };
 
     _handleIndexChange = index => {
+      const { onIndexChange } = this.props.navigationConfig;
+      if (onIndexChange) {
+        setTimeout(onIndexChange.bind(this, index));
+      }
+
       if (this._isTabPress) {
         this._isTabPress = false;
         return;
