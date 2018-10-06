@@ -24,18 +24,7 @@ class TabNavigationView extends React.PureComponent<Props, State> {
     static defaultProps = {
         lazy: true,
     };
-
-    static getDerivedStateFromProps(nextProps, prevState) {
-        const { index } = nextProps.navigation.state;
-
-        return {
-            // Set the current tab to be loaded if it was not loaded before
-            loaded: prevState.loaded.includes(index)
-                ? prevState.loaded
-                : [...prevState.loaded, index],
-        };
-    }
-
+    
     state = {
         loaded: [this.props.navigation.state.index],
         isVisible: true
