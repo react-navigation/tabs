@@ -90,7 +90,7 @@ export default function createTabNavigator(TabView: React.ComponentType<*>) {
       return route.routeName;
     };
 
-    _getAccessibilityLabel = ({ route }) => {
+    _getAccessibilityLabel = ({ route, isBottom }) => {
       const { descriptors } = this.props;
       const descriptor = descriptors[route.key];
       const options = descriptor.options;
@@ -102,6 +102,11 @@ export default function createTabNavigator(TabView: React.ComponentType<*>) {
       const label = this._getLabelText({ route });
 
       if (typeof label === 'string') {
+        const { index, routesLength } = route;
+        if (isBottom && index && routesLength) {
+          const incrementedRouteIdx = route.index + 1;
+          return `${label} ,tab, ${incrementedRouteIdx} of ${routesLength}`;
+        }
         return label;
       }
     };
