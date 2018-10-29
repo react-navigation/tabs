@@ -215,7 +215,6 @@ class TabBarBottom extends React.Component<Props> {
           const scene = { route, focused };
           const accessibilityLabel = this.props.getAccessibilityLabel({
             route,
-            isBottom: true,
           });
           const testID = this.props.getTestID({ route });
 
