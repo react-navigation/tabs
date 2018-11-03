@@ -196,7 +196,6 @@ class TabBarBottom extends React.Component<Props> {
     } = this.props;
 
     const { routes } = navigation.state;
-    const routesLength = routes.length;
 
     const tabBarStyle = [
       styles.tabBar,
@@ -209,8 +208,6 @@ class TabBarBottom extends React.Component<Props> {
     return (
       <SafeAreaView style={tabBarStyle} forceInset={safeAreaInset}>
         {routes.map((route, index) => {
-          route.index = index;
-          route.routesLength = routesLength;
           const focused = index === navigation.state.index;
           const scene = { route, focused };
           const accessibilityLabel = this.props.getAccessibilityLabel({

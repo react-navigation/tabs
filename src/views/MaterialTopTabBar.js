@@ -140,21 +140,11 @@ export default class TabBarTop extends React.PureComponent<Props> {
     /* eslint-disable no-unused-vars */
     const { navigation, renderIcon, getLabelText, ...rest } = this.props;
 
-    // Set route.accessibilityLabel that TabBar will reference internally
-    const navigationState = navigation.state;
-    navigationState.routes.forEach((route, idx, routes) => {
-      route.index = idx;
-      route.routesLength = routes.length;
-      route.accessibilityLabel = this.props.getAccessibilityLabel({
-        route,
-      });
-    });
-
     return (
       /* $FlowFixMe */
       <TabBar
         {...rest}
-        navigationState={navigationState}
+        navigationState={navigation.state}
         renderIcon={this._renderIcon}
         renderLabel={this._renderLabel}
       />
