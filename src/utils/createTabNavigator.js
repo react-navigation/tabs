@@ -103,8 +103,8 @@ export default function createTabNavigator(TabView: React.ComponentType<*>) {
 
       if (typeof label === 'string') {
         const { index, routesLength } = route;
-        if (index && routesLength) {
-          const incrementedRouteIdx = route.index + 1;
+        if (routesLength) {
+          const incrementedRouteIdx = index + 1;
           return `${label} ,tab, ${incrementedRouteIdx} of ${routesLength}`;
         }
         return label;
