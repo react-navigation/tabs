@@ -23,6 +23,7 @@ export type InjectedProps = {
   renderScene: (props: { route: any }) => ?React.Node,
   onIndexChange: (index: number) => any,
   onTabPress: (props: { route: any }) => mixed,
+  onTabLongPress: (props: { route: any }) => mixed,
   navigation: any,
   descriptors: any,
   screenProps?: any,
@@ -144,6 +145,12 @@ export default function createTabNavigator(TabView: React.ComponentType<*>) {
       }
     };
 
+    _handleTabLongPress = ({ route }) => {
+      if (options.tabBarOnLongPress) {
+        options.tabBarOnLongPress({ navigation });
+      }
+    }
+
     _handleIndexChange = index => {
       if (this._isTabPress) {
         this._isTabPress = false;
@@ -187,6 +194,7 @@ export default function createTabNavigator(TabView: React.ComponentType<*>) {
           renderScene={this._renderScene}
           onIndexChange={this._handleIndexChange}
           onTabPress={this._handleTabPress}
+          onTabLongPress={this._handleTabLongPress}
           navigation={navigation}
           descriptors={descriptors}
           screenProps={screenProps}
