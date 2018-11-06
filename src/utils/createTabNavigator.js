@@ -146,10 +146,14 @@ export default function createTabNavigator(TabView: React.ComponentType<*>) {
     };
 
     _handleTabLongPress = ({ route }) => {
+      const { descriptors } = this.props;
+      const descriptor = descriptors[route.key];
+      const { navigation, options } = descriptor;
+
       if (options.tabBarOnLongPress) {
         options.tabBarOnLongPress({ navigation });
       }
-    }
+    };
 
     _handleIndexChange = index => {
       if (this._isTabPress) {
