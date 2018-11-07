@@ -118,6 +118,19 @@ export default function createTabNavigator(TabView: React.ComponentType<*>) {
       return options.tabBarTestID;
     };
 
+    _makeDefaultHandler = ({ route, navigation }) => () => {
+      if (navigation.isFocused()) {
+        if (route.hasOwnProperty('index') && route.index > 0) {
+          // If current tab has a nested navigator, pop to top
+          navigation.dispatch(StackActions.popToTop({ key: route.key }));
+        } else {
+          navigation.emit('refocus');
+        }
+      } else {
+        this._jumpTo(route.routeName);
+      }
+    };
+
     _handleTabPress = ({ route }) => {
       this._isTabPress = true;
 
@@ -125,18 +138,7 @@ export default function createTabNavigator(TabView: React.ComponentType<*>) {
       const descriptor = descriptors[route.key];
       const { navigation, options } = descriptor;
 
-      const defaultHandler = () => {
-        if (navigation.isFocused()) {
-          if (route.hasOwnProperty('index') && route.index > 0) {
-            // If current tab has a nested navigator, pop to top
-            navigation.dispatch(StackActions.popToTop({ key: route.key }));
-          } else {
-            navigation.emit('refocus');
-          }
-        } else {
-          this._jumpTo(route.routeName);
-        }
-      };
+      const defaultHandler = this._makeDefaultHandler({ route, navigation });
 
       if (options.tabBarOnPress) {
         options.tabBarOnPress({ navigation, defaultHandler });
@@ -150,8 +152,12 @@ export default function createTabNavigator(TabView: React.ComponentType<*>) {
       const descriptor = descriptors[route.key];
       const { navigation, options } = descriptor;
 
+      const defaultHandler = this._makeDefaultHandler({ route, navigation });
+
       if (options.tabBarOnLongPress) {
-        options.tabBarOnLongPress({ navigation });
+        options.tabBarOnLongPress({ navigation, defaultHandler });
+      } else {
+        defaultHandler();
       }
     };
 
