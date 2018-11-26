@@ -118,14 +118,15 @@ export default function createTabNavigator(TabView: React.ComponentType<*>) {
       return options.tabBarTestID;
     };
 
-    _makeDefaultHandler = ({ route, navigation }) => ({ customScroll, overridesDefaultScroll }) => {
+    _makeDefaultHandler = ({ route, navigation }) => (custom = { }) => {
       if (navigation.isFocused()) {
         if (route.hasOwnProperty('index') && route.index > 0) {
           // If current tab has a nested navigator, pop to top
           navigation.dispatch(StackActions.popToTop({ key: route.key }));
         } else {
+          const { customScroll, overridesDefaultScroll } = custom
           if (customScroll && typeof customScroll === 'function') customScroll()
-          if (overridesDefaultScroll === false || typeof customScroll !== 'function') navigation.emit('refocus')
+          if (!overridesDefaultScroll || typeof customScroll !== 'function') navigation.emit('refocus')
         }
       } else {
         this._jumpTo(route.routeName);
