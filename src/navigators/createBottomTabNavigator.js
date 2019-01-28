@@ -1,7 +1,7 @@
 /* @flow */
 
 import * as React from 'react';
-import { View, StyleSheet } from 'react-native';
+import { View, StyleSheet, SafeAreaView } from 'react-native';
 import { polyfill } from 'react-lifecycles-compat';
 
 // eslint-disable-next-line import/no-unresolved
@@ -69,19 +69,21 @@ class TabNavigationView extends React.PureComponent<Props, State> {
     }
 
     return (
-      <TabBarComponent
-        {...tabBarOptions}
-        jumpTo={this._jumpTo}
-        navigation={navigation}
-        screenProps={screenProps}
-        onTabPress={onTabPress}
-        onTabLongPress={onTabLongPress}
-        getLabelText={getLabelText}
-        getButtonComponent={getButtonComponent}
-        getAccessibilityLabel={getAccessibilityLabel}
-        getTestID={getTestID}
-        renderIcon={renderIcon}
-      />
+      <SafeAreaView>
+        <TabBarComponent
+          {...tabBarOptions}
+          jumpTo={this._jumpTo}
+          navigation={navigation}
+          screenProps={screenProps}
+          onTabPress={onTabPress}
+          onTabLongPress={onTabLongPress}
+          getLabelText={getLabelText}
+          getButtonComponent={getButtonComponent}
+          getAccessibilityLabel={getAccessibilityLabel}
+          getTestID={getTestID}
+          renderIcon={renderIcon}
+        />
+      </SafeAreaView>
     );
   };
 
