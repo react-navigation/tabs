@@ -3,7 +3,7 @@
 import * as React from 'react';
 import { View, StyleSheet } from 'react-native';
 import { TabBar } from 'react-native-tab-view';
-import Animated from 'react-native-reanimated';
+import Animated from '../modules/Animated';
 import type {
   ViewStyleProp,
   TextStyleProp,

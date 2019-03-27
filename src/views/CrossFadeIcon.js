@@ -2,7 +2,7 @@
 
 import React from 'react';
 import { View, StyleSheet } from 'react-native';
-import Animated from 'react-native-reanimated';
+import Animated from '../modules/Animated';
 
 type Props = {
   route: any,
