@@ -1,7 +1,7 @@
 /* @flow */
 
 import * as React from 'react';
-import { View, StyleSheet } from 'react-native';
+import { View, Platform, StyleSheet } from 'react-native';
 
 // eslint-disable-next-line import/no-unresolved
 import { ScreenContainer } from 'react-native-screens';
@@ -19,6 +19,7 @@ type Props = InjectedProps & {
 };
 
 type State = {
+  tabBarHeight: number,
   loaded: number[],
 };
 
@@ -39,6 +40,7 @@ class TabNavigationView extends React.PureComponent<Props, State> {
   }
 
   state = {
+    tabBarHeight: BottomTabBar.getDefaultHeight(),
     loaded: [this.props.navigation.state.index],
   };
 
@@ -81,6 +83,7 @@ class TabNavigationView extends React.PureComponent<Props, State> {
     return (
       <TabBarComponent
         {...tabBarOptions}
+        onResize={tabBarHeight => this.setState({ tabBarHeight })}
         jumpTo={this._jumpTo}
         navigation={navigation}
         screenProps={screenProps}
@@ -106,10 +109,13 @@ class TabNavigationView extends React.PureComponent<Props, State> {
   render() {
     const { navigation, renderScene, lazy } = this.props;
     const { routes } = navigation.state;
-    const { loaded } = this.state;
+    const { loaded, tabBarHeight } = this.state;
 
+    const isWeb = Platform.OS === 'web';
     return (
-      <View style={styles.container}>
+      <View
+        style={[styles.container, isWeb && { paddingBottom: tabBarHeight }]}
+      >
         <ScreenContainer style={styles.pages}>
           {routes.map((route, index) => {
             if (lazy && !loaded.includes(index)) {
@@ -122,7 +128,7 @@ class TabNavigationView extends React.PureComponent<Props, State> {
             return (
               <ResourceSavingScene
                 key={route.key}
-                style={StyleSheet.absoluteFill}
+                style={!isWeb && StyleSheet.absoluteFill}
                 isVisible={isFocused}
               >
                 {renderScene({ route })}

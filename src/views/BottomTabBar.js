@@ -8,7 +8,7 @@ import {
   Platform,
 } from 'react-native';
 import { SafeAreaView } from '@react-navigation/native';
-import Animated from 'react-native-reanimated';
+import Animated from '../modules/Animated';
 
 import CrossFadeIcon from './CrossFadeIcon';
 import withDimensions from '../utils/withDimensions';
@@ -33,6 +33,7 @@ type Props = TabBarOptions & {
   jumpTo: any,
   onTabPress: any,
   onTabLongPress: any,
+  onResize: (tabBarHeight: number) => void,
   getAccessibilityLabel: (props: { route: any }) => string,
   getButtonComponent: ({ route: any }) => any,
   getLabelText: ({ route: any }) => any,
@@ -84,7 +85,12 @@ class TabBarBottom extends React.Component<Props> {
     allowFontScaling: true,
     adaptive: isIOS11,
     safeAreaInset: { bottom: 'always', top: 'never' },
+    onResize: () => {},
   };
+
+  static getDefaultHeight() {
+    return Platform.isPad ? DEFAULT_HEIGHT : COMPACT_HEIGHT;
+  }
 
   _renderLabel = ({ route, focused }) => {
     const {
@@ -203,6 +209,7 @@ class TabBarBottom extends React.Component<Props> {
       safeAreaInset,
       style,
       tabStyle,
+      onResize,
     } = this.props;
 
     const { routes } = navigation.state;
@@ -216,7 +223,15 @@ class TabBarBottom extends React.Component<Props> {
     ];
 
     return (
-      <SafeAreaView style={tabBarStyle} forceInset={safeAreaInset}>
+      <SafeAreaView
+        onLayout={({
+          nativeEvent: {
+            layout: { height },
+          },
+        }) => onResize(height)}
+        style={tabBarStyle}
+        forceInset={safeAreaInset}
+      >
         {routes.map((route, index) => {
           const focused = index === navigation.state.index;
           const scene = { route, focused };
@@ -268,6 +283,15 @@ const styles = StyleSheet.create({
     borderTopWidth: StyleSheet.hairlineWidth,
     borderTopColor: 'rgba(0, 0, 0, .3)',
     flexDirection: 'row',
+    ...Platform.select({
+      web: {
+        position: 'fixed',
+        bottom: 0,
+        left: 0,
+        right: 0,
+      },
+      default: {},
+    }),
   },
   tabBarCompact: {
     height: COMPACT_HEIGHT,
@@ -294,7 +318,7 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   iconWithExplicitHeight: {
-    height: Platform.isPad ? DEFAULT_HEIGHT : COMPACT_HEIGHT,
+    height: TabBarBottom.getDefaultHeight(),
   },
   label: {
     textAlign: 'center',

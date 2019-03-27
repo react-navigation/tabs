@@ -23,9 +23,14 @@ export default class ResourceSavingScene extends React.Component<Props> {
 
     const { isVisible, children, style, ...rest } = this.props;
 
+    const display = Platform.OS === 'web' && !isVisible ? 'none' : 'flex';
     return (
       <View
-        style={[styles.container, style, { opacity: isVisible ? 1 : 0 }]}
+        style={[
+          styles.container,
+          style,
+          { opacity: isVisible ? 1 : 0, display },
+        ]}
         collapsable={false}
         removeClippedSubviews={
           // On iOS, set removeClippedSubviews to true only when not focused
