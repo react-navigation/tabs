@@ -2,13 +2,14 @@
 
 import React from 'react';
 import {
+  Animated,
   TouchableWithoutFeedback,
   StyleSheet,
   View,
+  Keyboard,
   Platform,
 } from 'react-native';
 import { SafeAreaView } from '@react-navigation/native';
-import Animated from 'react-native-reanimated';
 
 import CrossFadeIcon from './CrossFadeIcon';
 import withDimensions from '../utils/withDimensions';
@@ -20,6 +21,7 @@ type LabelPosition =
   | ((options: { deviceOrientation: Orientation }) => Position);
 
 export type TabBarOptions = {
+  keyboardHidesTabBar: boolean,
   activeTintColor?: string,
   inactiveTintColor?: string,
   activeBackgroundColor?: string,
@@ -41,6 +43,8 @@ type Props = TabBarOptions & {
   onTabPress: any,
   onTabLongPress: any,
   getAccessibilityLabel: (props: { route: any }) => string,
+  getAccessibilityRole: (props: { route: any }) => string,
+  getAccessibilityStates: (props: { route: any }) => Array<string>,
   getButtonComponent: ({ route: any }) => any,
   getLabelText: ({ route: any }) => any,
   getTestID: (props: { route: any }) => string,
@@ -48,6 +52,12 @@ type Props = TabBarOptions & {
   dimensions: { width: number, height: number },
   isLandscape: boolean,
   safeAreaInset: { top: string, right: string, bottom: string, left: string },
+};
+
+type State = {
+  layout: { height: number, width: number },
+  keyboard: boolean,
+  visible: Animated.Value,
 };
 
 const majorVersion = parseInt(Platform.Version, 10);
@@ -63,6 +73,8 @@ class TouchableWithoutFeedbackWrapper extends React.Component<*> {
       onLongPress,
       testID,
       accessibilityLabel,
+      accessibilityRole,
+      accessibilityStates,
       ...props
     } = this.props;
 
@@ -71,8 +83,10 @@ class TouchableWithoutFeedbackWrapper extends React.Component<*> {
         onPress={onPress}
         onLongPress={onLongPress}
         testID={testID}
-        hitSlop={{ left: 15, right: 15, top: 5, bottom: 5 }}
+        hitSlop={{ left: 15, right: 15, top: 0, bottom: 5 }}
         accessibilityLabel={accessibilityLabel}
+        accessibilityRole={accessibilityRole}
+        accessibilityStates={accessibilityStates}
       >
         <View {...props} />
       </TouchableWithoutFeedback>
@@ -80,8 +94,9 @@ class TouchableWithoutFeedbackWrapper extends React.Component<*> {
   }
 }
 
-class TabBarBottom extends React.Component<Props> {
+class TabBarBottom extends React.Component<Props, State> {
   static defaultProps = {
+    keyboardHidesTabBar: true,
     activeTintColor: '#007AFF',
     activeBackgroundColor: 'transparent',
     inactiveTintColor: '#8E8E93',
@@ -91,6 +106,66 @@ class TabBarBottom extends React.Component<Props> {
     allowFontScaling: true,
     adaptive: isIOS11,
     safeAreaInset: { bottom: 'always', top: 'never' },
+  };
+
+  state = {
+    layout: { height: 0, width: 0 },
+    keyboard: false,
+    visible: new Animated.Value(1),
+  };
+
+  componentDidMount() {
+    if (Platform.OS === 'ios') {
+      Keyboard.addListener('keyboardWillShow', this._handleKeyboardShow);
+      Keyboard.addListener('keyboardWillHide', this._handleKeyboardHide);
+    } else {
+      Keyboard.addListener('keyboardDidShow', this._handleKeyboardShow);
+      Keyboard.addListener('keyboardDidHide', this._handleKeyboardHide);
+    }
+  }
+
+  componentWillUnmount() {
+    if (Platform.OS === 'ios') {
+      Keyboard.removeListener('keyboardWillShow', this._handleKeyboardShow);
+      Keyboard.removeListener('keyboardWillHide', this._handleKeyboardHide);
+    } else {
+      Keyboard.removeListener('keyboardDidShow', this._handleKeyboardShow);
+      Keyboard.removeListener('keyboardDidHide', this._handleKeyboardHide);
+    }
+  }
+
+  _handleKeyboardShow = () =>
+    this.setState({ keyboard: true }, () =>
+      Animated.timing(this.state.visible, {
+        toValue: 0,
+        duration: 150,
+        useNativeDriver: true,
+      }).start()
+    );
+
+  _handleKeyboardHide = () =>
+    Animated.timing(this.state.visible, {
+      toValue: 1,
+      duration: 100,
+      useNativeDriver: true,
+    }).start(() => {
+      this.setState({ keyboard: false });
+    });
+
+  _handleLayout = e => {
+    const { layout } = this.state;
+    const { height, width } = e.nativeEvent.layout;
+
+    if (height === layout.height && width === layout.width) {
+      return;
+    }
+
+    this.setState({
+      layout: {
+        height,
+        width,
+      },
+    });
   };
 
   _renderLabel = ({ route, focused }) => {
@@ -228,6 +303,7 @@ class TabBarBottom extends React.Component<Props> {
   render() {
     const {
       navigation,
+      keyboardHidesTabBar,
       activeBackgroundColor,
       inactiveBackgroundColor,
       onTabPress,
@@ -248,45 +324,71 @@ class TabBarBottom extends React.Component<Props> {
     ];
 
     return (
-      <SafeAreaView style={tabBarStyle} forceInset={safeAreaInset}>
-        {routes.map((route, index) => {
-          const focused = index === navigation.state.index;
-          const scene = { route, focused };
-          const accessibilityLabel = this.props.getAccessibilityLabel({
-            route,
-          });
-          const testID = this.props.getTestID({ route });
+      <Animated.View
+        style={[
+          styles.container,
+          keyboardHidesTabBar
+            ? {
+                // When the keyboard is shown, slide down the tab bar
+                transform: [
+                  {
+                    translateY: this.state.visible.interpolate({
+                      inputRange: [0, 1],
+                      outputRange: [this.state.layout.height, 0],
+                    }),
+                  },
+                ],
+                // Absolutely position the tab bar so that the content is below it
+                // This is needed to avoid gap at bottom when the tab bar is hidden
+                position: this.state.keyboard ? 'absolute' : null,
+              }
+            : null,
+        ]}
+        pointerEvents={
+          keyboardHidesTabBar && this.state.keyboard ? 'none' : 'auto'
+        }
+        onLayout={this._handleLayout}
+      >
+        <SafeAreaView style={tabBarStyle} forceInset={safeAreaInset}>
+          {routes.map((route, index) => {
+            const focused = index === navigation.state.index;
+            const scene = { route, focused };
+            const accessibilityLabel = this.props.getAccessibilityLabel({
+              route,
+            });
+            const testID = this.props.getTestID({ route });
 
-          const backgroundColor = focused
-            ? activeBackgroundColor
-            : inactiveBackgroundColor;
+            const backgroundColor = focused
+              ? activeBackgroundColor
+              : inactiveBackgroundColor;
 
-          const ButtonComponent =
-            this.props.getButtonComponent({ route }) ||
-            TouchableWithoutFeedbackWrapper;
+            const ButtonComponent =
+              this.props.getButtonComponent({ route }) ||
+              TouchableWithoutFeedbackWrapper;
 
-          return (
-            <ButtonComponent
-              key={route.key}
-              onPress={() => onTabPress({ route })}
-              onLongPress={() => onTabLongPress({ route })}
-              testID={testID}
-              accessibilityLabel={accessibilityLabel}
-              style={[
-                styles.tab,
-                { backgroundColor },
-                this._shouldUseHorizontalLabels()
-                  ? styles.tabLandscape
-                  : styles.tabPortrait,
-                tabStyle,
-              ]}
-            >
-              {this._renderIcon(scene)}
-              {this._renderLabel(scene)}
-            </ButtonComponent>
-          );
-        })}
-      </SafeAreaView>
+            return (
+              <ButtonComponent
+                key={route.key}
+                onPress={() => onTabPress({ route })}
+                onLongPress={() => onTabLongPress({ route })}
+                testID={testID}
+                accessibilityLabel={accessibilityLabel}
+                style={[
+                  styles.tab,
+                  { backgroundColor },
+                  this._shouldUseHorizontalLabels()
+                    ? styles.tabLandscape
+                    : styles.tabPortrait,
+                  tabStyle,
+                ]}
+              >
+                {this._renderIcon(scene)}
+                {this._renderLabel(scene)}
+              </ButtonComponent>
+            );
+          })}
+        </SafeAreaView>
+      </Animated.View>
     );
   }
 }
@@ -300,6 +402,12 @@ const styles = StyleSheet.create({
     borderTopWidth: StyleSheet.hairlineWidth,
     borderTopColor: 'rgba(0, 0, 0, .3)',
     flexDirection: 'row',
+  },
+  container: {
+    left: 0,
+    right: 0,
+    bottom: 0,
+    elevation: 8,
   },
   tabBarCompact: {
     height: COMPACT_HEIGHT,
