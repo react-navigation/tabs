@@ -461,7 +461,7 @@ const styles = StyleSheet.create({
   },
   labelBeside: {
     fontSize: 12,
-    marginLeft: 15,
+    marginLeft: 25,
   },
 });
 
