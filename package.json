@@ -1,6 +1,6 @@
 {
   "name": "react-navigation-tabs",
-  "version": "1.1.0",
+  "version": "1.1.1",
   "description": "Tab Navigation components for React Navigation",
   "main": "src/index.js",
   "files": [
@@ -10,7 +10,6 @@
     "test": "jest",
     "flow": "flow",
     "lint": "eslint .",
-    "precommit": "yarn lint && yarn flow && yarn test",
     "bootstrap": "yarn && yarn --cwd example",
     "example": "yarn --cwd example",
     "release": "yarn release-it"
@@ -73,8 +72,7 @@
   },
   "husky": {
     "hooks": {
-      "commit-msg": "commitlint -E HUSKY_GIT_PARAMS",
-      "pre-commit": "yarn lint && yarn flow check"
+      "commit-msg": "commitlint -E HUSKY_GIT_PARAMS"
     }
   },
   "jest": {
