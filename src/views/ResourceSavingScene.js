@@ -29,7 +29,8 @@ export default class ResourceSavingScene extends React.Component<Props> {
         style={[
           styles.container,
           style,
-          { opacity: isVisible ? 1 : 0, display },
+          // eslint-disable-next-line react-native/no-inline-styles
+          { opacity: isVisible ? 1 : 0 },
         ]}
         collapsable={false}
         removeClippedSubviews={
@@ -38,11 +39,8 @@ export default class ResourceSavingScene extends React.Component<Props> {
           Platform.OS === 'ios' ? !isVisible : true
         }
         pointerEvents={isVisible ? 'auto' : 'none'}
-        {...rest}
-      >
-        <View style={isVisible ? styles.attached : styles.detached}>
-          {children}
-        </View>
+        {...rest}>
+        <View style={isVisible ? styles.attached : styles.detached}>{children}</View>
       </View>
     );
   }
