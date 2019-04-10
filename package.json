@@ -1,6 +1,6 @@
 {
   "name": "react-navigation-tabs",
-  "version": "2.1.0",
+  "version": "2.1.1",
   "description": "Tab Navigation components for React Navigation",
   "main": "src/index.js",
   "files": [
@@ -10,7 +10,6 @@
     "test": "jest",
     "flow": "flow",
     "lint": "eslint .",
-    "precommit": "yarn lint && yarn flow && yarn test",
     "bootstrap": "yarn && yarn --cwd example",
     "example": "yarn --cwd example",
     "release": "yarn release-it"
