@@ -89,7 +89,7 @@ class TouchableWithoutFeedbackWrapper extends React.Component<*> {
 
 class TabBarBottom extends React.Component<Props, State> {
   static defaultProps = {
-    keyboardHidesTabBar: true,
+    keyboardHidesTabBar: false,
     activeTintColor: '#007AFF',
     activeBackgroundColor: 'transparent',
     inactiveTintColor: '#8E8E93',
