@@ -37,7 +37,7 @@ type Props = TabBarOptions & {
   onTabLongPress: any,
   getAccessibilityLabel: (props: { route: any }) => string,
   getAccessibilityRole: (props: { route: any }) => string,
-  getAccessibilityStates: (props: { route: any }) => Array<string>,
+  getAccessibilityStates: (props: { route: any }) => string[],
   getButtonComponent: ({ route: any }) => any,
   getLabelText: ({ route: any }) => any,
   getTestID: (props: { route: any }) => string,
@@ -324,6 +324,15 @@ class TabBarBottom extends React.Component<Props, State> {
             const accessibilityLabel = this.props.getAccessibilityLabel({
               route,
             });
+
+            const accessibilityRole = this.props.getAccessibilityRole({
+              route,
+            });
+
+            const accessibilityStates = this.props.getAccessibilityStates(
+              scene
+            );
+
             const testID = this.props.getTestID({ route });
 
             const backgroundColor = focused
@@ -341,6 +350,8 @@ class TabBarBottom extends React.Component<Props, State> {
                 onLongPress={() => onTabLongPress({ route })}
                 testID={testID}
                 accessibilityLabel={accessibilityLabel}
+                accessibilityRole={accessibilityRole}
+                accessibilityStates={accessibilityStates}
                 style={[
                   styles.tab,
                   { backgroundColor },
