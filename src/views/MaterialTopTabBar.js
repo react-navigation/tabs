@@ -3,11 +3,11 @@
 import * as React from 'react';
 import { View, StyleSheet } from 'react-native';
 import { TabBar } from 'react-native-tab-view';
-import Animated from '../modules/Animated';
 import type {
   ViewStyleProp,
   TextStyleProp,
 } from 'react-native/Libraries/StyleSheet/StyleSheet';
+import Animated from '../modules/Animated';
 
 type Route = {
   key: string,

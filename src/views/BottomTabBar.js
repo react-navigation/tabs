@@ -16,7 +16,9 @@ import withDimensions from '../utils/withDimensions';
 
 type Orientation = 'horizontal' | 'vertical';
 type Position = 'beside-icon' | 'below-icon';
-type LabelPosition = Position | ((options: { deviceOrientation: Orientation }) => Position);
+type LabelPosition =
+  | Position
+  | ((options: { deviceOrientation: Orientation }) => Position);
 
 export type TabBarOptions = {
   keyboardHidesTabBar: boolean,
@@ -38,7 +40,7 @@ type Props = TabBarOptions & {
   navigation: any,
   onTabPress: any,
   onTabLongPress: any,
-  onResize: (tabBarHeight: number) => void,
+  onHeightChange?: (height: number) => void,
   getAccessibilityLabel: (props: { route: any }) => string,
   getAccessibilityRole: (props: { route: any }) => string,
   getAccessibilityStates: (props: { route: any }) => string[],
@@ -83,7 +85,8 @@ class TouchableWithoutFeedbackWrapper extends React.Component<*> {
         hitSlop={{ left: 15, right: 15, top: 0, bottom: 5 }}
         accessibilityLabel={accessibilityLabel}
         accessibilityRole={accessibilityRole}
-        accessibilityStates={accessibilityStates}>
+        accessibilityStates={accessibilityStates}
+      >
         <View {...props} />
       </TouchableWithoutFeedback>
     );
@@ -102,8 +105,11 @@ class TabBarBottom extends React.Component<Props, State> {
     allowFontScaling: true,
     adaptive: isIOS11,
     safeAreaInset: { bottom: 'always', top: 'never' },
-    onResize: () => {},
   };
+
+  static getDefaultHeight() {
+    return Platform.isPad ? DEFAULT_HEIGHT : COMPACT_HEIGHT;
+  }
 
   state = {
     layout: { height: 0, width: 0 },
@@ -157,6 +163,10 @@ class TabBarBottom extends React.Component<Props, State> {
       return;
     }
 
+    if (this.props.onHeightChange) {
+      this.props.onHeightChange(height);
+    }
+
     this.setState({
       layout: {
         height,
@@ -193,7 +203,8 @@ class TabBarBottom extends React.Component<Props, State> {
             showIcon && horizontal ? styles.labelBeside : styles.labelBeneath,
             labelStyle,
           ]}
-          allowFontScaling={allowFontScaling}>
+          allowFontScaling={allowFontScaling}
+        >
           {label}
         </Animated.Text>
       );
@@ -250,7 +261,13 @@ class TabBarBottom extends React.Component<Props, State> {
 
   _shouldUseHorizontalLabels = () => {
     const { routes } = this.props.navigation.state;
-    const { isLandscape, dimensions, adaptive, tabStyle, labelPosition } = this.props;
+    const {
+      isLandscape,
+      dimensions,
+      adaptive,
+      tabStyle,
+      labelPosition,
+    } = this.props;
 
     if (labelPosition) {
       let position;
@@ -301,7 +318,6 @@ class TabBarBottom extends React.Component<Props, State> {
       safeAreaInset,
       style,
       tabStyle,
-      onResize,
     } = this.props;
 
     const { routes } = navigation.state;
@@ -336,8 +352,11 @@ class TabBarBottom extends React.Component<Props, State> {
               }
             : null,
         ]}
-        pointerEvents={keyboardHidesTabBar && this.state.keyboard ? 'none' : 'auto'}
-        onLayout={this._handleLayout}>
+        pointerEvents={
+          keyboardHidesTabBar && this.state.keyboard ? 'none' : 'auto'
+        }
+        onLayout={this._handleLayout}
+      >
         <SafeAreaView style={tabBarStyle} forceInset={safeAreaInset}>
           {routes.map((route, index) => {
             const focused = index === navigation.state.index;
@@ -350,14 +369,19 @@ class TabBarBottom extends React.Component<Props, State> {
               route,
             });
 
-            const accessibilityStates = this.props.getAccessibilityStates(scene);
+            const accessibilityStates = this.props.getAccessibilityStates(
+              scene
+            );
 
             const testID = this.props.getTestID({ route });
 
-            const backgroundColor = focused ? activeBackgroundColor : inactiveBackgroundColor;
+            const backgroundColor = focused
+              ? activeBackgroundColor
+              : inactiveBackgroundColor;
 
             const ButtonComponent =
-              this.props.getButtonComponent({ route }) || TouchableWithoutFeedbackWrapper;
+              this.props.getButtonComponent({ route }) ||
+              TouchableWithoutFeedbackWrapper;
 
             return (
               <ButtonComponent
@@ -371,9 +395,12 @@ class TabBarBottom extends React.Component<Props, State> {
                 style={[
                   styles.tab,
                   { backgroundColor },
-                  this._shouldUseHorizontalLabels() ? styles.tabLandscape : styles.tabPortrait,
+                  this._shouldUseHorizontalLabels()
+                    ? styles.tabLandscape
+                    : styles.tabPortrait,
                   tabStyle,
-                ]}>
+                ]}
+              >
                 {this._renderIcon(scene)}
                 {this._renderLabel(scene)}
               </ButtonComponent>
