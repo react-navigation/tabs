@@ -40,7 +40,7 @@ type Props = TabBarOptions & {
   navigation: any,
   onTabPress: any,
   onTabLongPress: any,
-  onResize: ({ height: number, width: number }) => void,
+  onResize: ({ height: number, width: number }) => void | null,
   getAccessibilityLabel: (props: { route: any }) => string,
   getAccessibilityRole: (props: { route: any }) => string,
   getAccessibilityStates: (props: { route: any }) => string[],
@@ -105,7 +105,7 @@ class TabBarBottom extends React.Component<Props, State> {
     allowFontScaling: true,
     adaptive: isIOS11,
     safeAreaInset: { bottom: 'always', top: 'never' },
-    onResize: () => {},
+    onResize: null,
   };
 
   static getDefaultHeight() {
@@ -164,7 +164,9 @@ class TabBarBottom extends React.Component<Props, State> {
       return;
     }
 
-    this.props.onResize({ width, height });
+    if (this.props.onResize) {
+      this.props.onResize({ width, height });
+    }
 
     this.setState({
       layout: {
