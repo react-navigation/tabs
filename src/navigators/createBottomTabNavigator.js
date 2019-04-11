@@ -89,7 +89,7 @@ class TabNavigationView extends React.PureComponent<Props, State> {
     return (
       <TabBarComponent
         {...tabBarOptions}
-        onResize={tabBarHeight => this.setState({ tabBarHeight })}
+        onResize={({ height }) => this.setState({ tabBarHeight: height })}
         jumpTo={this._jumpTo}
         navigation={navigation}
         screenProps={screenProps}
