@@ -30,6 +30,9 @@ export type TabBarOptions = {
   showLabel: boolean,
   showIcon: boolean,
   labelStyle: any,
+  iconStyle: any,
+  activeLabelStyle: any,
+  inactiveLabelStyle: any,
   tabStyle: any,
   labelPosition?: LabelPosition,
   adaptive?: boolean,
@@ -171,6 +174,8 @@ class TabBarBottom extends React.Component<Props, State> {
       activeTintColor,
       inactiveTintColor,
       labelStyle,
+      activeLabelStyle,
+      inactiveLabelStyle,
       showLabel,
       showIcon,
       allowFontScaling,
@@ -193,6 +198,7 @@ class TabBarBottom extends React.Component<Props, State> {
             { color: tintColor },
             showIcon && horizontal ? styles.labelBeside : styles.labelBeneath,
             labelStyle,
+            focused ? activeLabelStyle : inactiveLabelStyle,
           ]}
           allowFontScaling={allowFontScaling}
         >
@@ -218,6 +224,7 @@ class TabBarBottom extends React.Component<Props, State> {
       navigation,
       activeTintColor,
       inactiveTintColor,
+      iconStyle,
       renderIcon,
       showIcon,
       showLabel,
@@ -245,6 +252,7 @@ class TabBarBottom extends React.Component<Props, State> {
           styles.iconWithExplicitHeight,
           showLabel === false && !horizontal && styles.iconWithoutLabel,
           showLabel !== false && !horizontal && styles.iconWithLabel,
+          iconStyle,
         ]}
       />
     );
