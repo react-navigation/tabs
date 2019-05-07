@@ -121,9 +121,10 @@ export default function createTabNavigator(TabView: React.ComponentType<*>) {
       const { navigation, options } = descriptor;
 
       const defaultHandler = this._makeDefaultHandler({ route, navigation });
+      const currentState = this.props.navigation.state;
 
       if (options.tabBarOnPress) {
-        options.tabBarOnPress({ navigation, defaultHandler });
+        options.tabBarOnPress({ navigation, defaultHandler, currentState });
       } else {
         defaultHandler();
       }
