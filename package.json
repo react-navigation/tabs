@@ -2,17 +2,22 @@
   "name": "react-navigation-tabs",
   "version": "2.2.0",
   "description": "Tab Navigation components for React Navigation",
-  "main": "src/index.js",
+  "main": "lib/commonjs/index.js",
+  "module": "lib/module/index.js",
+  "react-native": "lib/module/index.js",
+  "types": "lib/typescript/src/index.d.ts",
   "files": [
-    "src/"
+    "src",
+    "lib"
   ],
   "scripts": {
     "test": "jest",
-    "flow": "flow",
-    "lint": "eslint .",
+    "typescript": "tsc --noEmit",
+    "lint": "eslint --ext .js,.ts,.tsx .",
     "bootstrap": "yarn && yarn --cwd example",
     "example": "yarn --cwd example",
-    "release": "yarn release-it"
+    "release": "yarn release-it",
+    "prepare": "bob build"
   },
   "keywords": [
     "react-native-component",
@@ -38,11 +43,13 @@
   "dependencies": {
     "hoist-non-react-statics": "^3.3.0",
     "react-lifecycles-compat": "^3.0.4",
-    "react-native-tab-view": "^2.6.2"
+    "react-native-safe-area-view": "^0.14.6",
+    "react-native-tab-view": "^2.7.3"
   },
   "devDependencies": {
     "@commitlint/config-conventional": "^7.5.0",
     "@expo/vector-icons": "^10.0.1",
+    "@react-native-community/bob": "^0.6.1",
     "@types/hoist-non-react-statics": "^3.3.1",
     "@types/react": "^16.8.17",
     "@types/react-native": "^0.57.57",
@@ -66,11 +73,10 @@
     "react-navigation": "^3.3.2",
     "react-test-renderer": "16.5.0",
     "release-it": "^10.3.1",
-    "typescript": "^3.4.5"
+    "typescript": "^3.5.2"
   },
   "peerDependencies": {
     "@react-navigation/core": "^3.4.0",
-    "@react-navigation/native": "^3.0.0",
     "react": "*",
     "react-native": "*",
     "react-native-gesture-handler": "^1.0.0",
@@ -89,10 +95,20 @@
       "<rootDir>/__setup__/enzyme.js"
     ],
     "modulePathIgnorePatterns": [
-      "<rootDir>/example/node_modules"
+      "<rootDir>/example/node_modules",
+      "<rootDir>/lib/"
     ],
     "snapshotSerializers": [
       "enzyme-to-json/serializer"
+    ]
+  },
+  "@react-native-community/bob": {
+    "source": "src",
+    "output": "lib",
+    "targets": [
+      "commonjs",
+      "module",
+      "typescript"
     ]
   }
 }

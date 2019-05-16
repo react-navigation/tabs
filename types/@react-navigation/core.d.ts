@@ -30,11 +30,11 @@ declare module '@react-navigation/core' {
     component: React.ComponentType<any>;
   }>;
 
-  export function createNavigator(
-    StackView: React.ComponentType<any>,
+  export function createNavigator<Props extends {}>(
+    view: React.ComponentType<Props>,
     router: any,
     config: object
-  ): React.ComponentType;
+  ): React.ComponentType<Props>;
 
   export function withNavigation<Props extends { navigation: object }>(
     Comp: React.ComponentType<Props>

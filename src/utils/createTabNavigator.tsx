@@ -6,11 +6,41 @@ import {
   createNavigator,
   SwitchActions,
 } from '@react-navigation/core';
-import { NavigationProp, SceneDescriptor, Route } from '../types';
+import {
+  NavigationProp,
+  NavigationTabOptions,
+  SceneDescriptor,
+  Route,
+  Screen,
+} from '../types';
+import { AccessibilityRole } from 'react-native';
 
-export type NavigatorProps = {
+type RouteConfig = {
+  [key: string]:
+    | Screen
+    | ({ screen: Screen } | { getScreen(): Screen }) & {
+        path?: string;
+        navigationOptions?:
+          | NavigationTabOptions
+          | ((options: { navigation: NavigationProp }) => NavigationTabOptions);
+      };
+};
+
+type CommonProps = {
+  navigation: NavigationProp;
+  descriptors: { [key: string]: SceneDescriptor };
+  screenProps?: unknown;
+};
+
+type ExtraProps = {
+  navigationConfig: {};
+};
+
+export type NavigationViewProps = {
   getLabelText: (props: { route: Route }) => string | undefined;
-  getAccessibilityLabel: (props: { route: Route }) => string | undefined;
+  getAccessibilityLabel: (props: {
+    route: Route;
+  }) => AccessibilityRole | undefined;
   getTestID: (props: { route: Route }) => string | undefined;
   renderIcon: (props: {
     route: Route;
@@ -22,19 +52,22 @@ export type NavigatorProps = {
   onIndexChange: (index: number) => void;
   onTabPress: (props: { route: Route }) => void;
   onTabLongPress: (props: { route: Route }) => void;
-  navigation: NavigationProp;
-  descriptors: { [key: string]: SceneDescriptor };
-  screenProps?: unknown;
-  navigationConfig: {};
 };
 
-export default function createTabNavigator<Props extends NavigatorProps>(
-  TabView: React.ComponentType<
-    Pick<Props, Exclude<keyof Props, keyof NavigatorProps>>
-  >
-): React.ComponentType<Props> {
-  class NavigationView extends React.Component<NavigatorProps> {
-    _renderScene = ({ route }) => {
+export default function createTabNavigator<
+  Props extends NavigationViewProps & CommonProps
+>(
+  TabView: React.ComponentType<Props>
+): (
+  routes: RouteConfig,
+  config: NavigationTabOptions
+) => React.ComponentType<
+  Pick<Props, Exclude<keyof Props, keyof NavigationViewProps>> & ExtraProps
+> {
+  class NavigationView extends React.Component<
+    Pick<Props, Exclude<keyof Props, keyof NavigationViewProps>> & ExtraProps
+  > {
+    _renderScene = ({ route }: { route: { key: string } }) => {
       const { screenProps, descriptors } = this.props;
       const descriptor = descriptors[route.key];
       const TabComponent = descriptor.getComponent();
@@ -203,7 +236,6 @@ export default function createTabNavigator<Props extends NavigatorProps>(
 
       return (
         <TabView
-          {...options}
           getLabelText={this._getLabelText}
           getAccessibilityLabel={this._getAccessibilityLabel}
           getTestID={this._getTestID}
@@ -220,8 +252,8 @@ export default function createTabNavigator<Props extends NavigatorProps>(
     }
   }
 
-  return (routes: object, config: object) => {
-    const router = TabRouter(routes, config);
-    return createNavigator(NavigationView, router, config);
+  return (routes: RouteConfig, config: NavigationTabOptions) => {
+    const router = TabRouter(routes, config as any);
+    return createNavigator(NavigationView, router, config as any);
   };
 }

@@ -1,66 +1,72 @@
-/* @flow */
-
 import * as React from 'react';
-import { View, StyleSheet } from 'react-native';
+import {
+  View,
+  StyleSheet,
+  StyleProp,
+  ViewStyle,
+  TextStyle,
+} from 'react-native';
 import { TabBar } from 'react-native-tab-view';
 import Animated from 'react-native-reanimated';
-import type {
-  ViewStyleProp,
-  TextStyleProp,
-} from 'react-native/Libraries/StyleSheet/StyleSheet';
 
 type Route = {
-  key: string,
-  routeName: string,
+  key: string;
+  routeName: string;
 };
 
-type Layout = {|
-  width: number,
-  height: number,
-|};
+type Scene = { route: Route; focused: boolean; color: string };
 
-export type TabBarOptions = {|
-  activeTintColor?: string,
-  allowFontScaling?: boolean,
-  bounces?: boolean,
-  inactiveTintColor?: string,
-  pressColor?: string,
-  pressOpacity?: number,
-  scrollEnabled?: boolean,
-  showIcon?: boolean,
-  showLabel?: boolean,
-  upperCaseLabel?: boolean,
-  tabStyle?: ViewStyleProp,
-  indicatorStyle?: ViewStyleProp,
-  iconStyle?: any,
-  labelStyle?: TextStyleProp,
-  contentContainerStyle?: ViewStyleProp,
-  style?: ViewStyleProp,
-|};
+type Layout = {
+  width: number;
+  height: number;
+};
 
-type Props = {|
-  ...TabBarOptions,
-  layout: Layout,
-  position: Animated.Node<number>,
-  jumpTo: (key: string) => void,
-  getLabelText: (scene: { route: Route }) => ?string,
-  getAccessible?: (scene: { route: Route }) => ?boolean,
-  getAccessibilityLabel: (scene: { route: Route }) => ?string,
-  getTestID: (scene: { route: Route }) => ?string,
+export type TabBarOptions = {
+  activeTintColor?: string;
+  allowFontScaling?: boolean;
+  bounces?: boolean;
+  inactiveTintColor?: string;
+  pressColor?: string;
+  pressOpacity?: number;
+  scrollEnabled?: boolean;
+  showIcon?: boolean;
+  showLabel?: boolean;
+  upperCaseLabel?: boolean;
+  tabStyle?: StyleProp<ViewStyle>;
+  indicatorStyle?: StyleProp<ViewStyle>;
+  iconStyle?: StyleProp<ViewStyle>;
+  labelStyle?: StyleProp<TextStyle>;
+  contentContainerStyle?: StyleProp<ViewStyle>;
+  style?: StyleProp<ViewStyle>;
+};
+
+type Props = TabBarOptions & {
+  layout: Layout;
+  position: Animated.Node<number>;
+  jumpTo: (key: string) => void;
+  getLabelText: (scene: {
+    route: Route;
+  }) =>
+    | ((scene: { focused: boolean; tintColor: string }) => React.ReactNode)
+    | string
+    | undefined;
+  getAccessible?: (scene: { route: Route }) => boolean | undefined;
+  getAccessibilityLabel: (scene: { route: Route }) => string | undefined;
+  getTestID: (scene: { route: Route }) => string | undefined;
   renderIcon: (scene: {
-    route: Route,
-    focused: boolean,
-    tintColor: string,
-    horizontal?: boolean,
-  }) => React.Node,
-  renderBadge?: (scene: { route: Route }) => React.Node,
-  onTabPress?: (scene: { route: Route }) => mixed,
-  onTabLongPress?: (scene: { route: Route }) => mixed,
-  tabBarPosition: 'top' | 'bottom',
-  navigationState: any,
-  screenProps: any,
-  navigation: any,
-|};
+    route: Route;
+    focused: boolean;
+    tintColor: string;
+    horizontal?: boolean;
+  }) => React.ReactNode;
+  renderBadge?: (scene: { route: Route }) => React.ReactNode;
+  onTabPress?: (scene: { route: Route }) => void;
+  onTabLongPress?: (scene: { route: Route }) => void;
+  tabBarPosition: 'top' | 'bottom';
+  navigationState: any;
+  screenProps: any;
+  navigation: any;
+};
 
 export default class TabBarTop extends React.PureComponent<Props> {
   static defaultProps = {
@@ -72,7 +78,7 @@ export default class TabBarTop extends React.PureComponent<Props> {
     allowFontScaling: true,
   };
 
-  _renderLabel = ({ route, focused, color }) => {
+  _renderLabel = ({ route, focused, color }: Scene) => {
     const {
       showLabel,
       upperCaseLabel,
@@ -104,7 +110,7 @@ export default class TabBarTop extends React.PureComponent<Props> {
     return label;
   };
 
-  _renderIcon = ({ route, focused, color }) => {
+  _renderIcon = ({ route, focused, color }: Scene) => {
     const { renderIcon, showIcon, iconStyle } = this.props;
 
     if (showIcon === false) {
@@ -127,7 +133,7 @@ export default class TabBarTop extends React.PureComponent<Props> {
       navigation,
       activeTintColor,
       inactiveTintColor,
-      /* eslint-disable no-unused-vars */
+      /* eslint-disable @typescript-eslint/no-unused-vars */
       renderIcon,
       getLabelText,
       allowFontScaling,
@@ -138,7 +144,7 @@ export default class TabBarTop extends React.PureComponent<Props> {
       navigationState,
       screenProps,
       iconStyle,
-      /* eslint-enable no-unused-vars */
+      /* eslint-enable @typescript-eslint/no-unused-vars */
       ...rest
     } = this.props;
 

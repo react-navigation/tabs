@@ -1,37 +1,36 @@
-/* @flow */
-
 import * as React from 'react';
+import { StyleProp, ViewStyle } from 'react-native';
 import { TabView } from 'react-native-tab-view';
-import type { ViewStyleProp } from 'react-native/Libraries/StyleSheet/StyleSheet';
 import createTabNavigator, {
-  type InjectedProps,
+  NavigationViewProps,
 } from '../utils/createTabNavigator';
-import MaterialTopTabBar, {
-  type TabBarOptions,
-} from '../views/MaterialTopTabBar';
+import MaterialTopTabBar, { TabBarOptions } from '../views/MaterialTopTabBar';
+import { NavigationProp, SceneDescriptor } from '../types';
 
 type Route = {
-  key: string,
-  routeName: string,
+  key: string;
+  routeName: string;
 };
 
-type Props = {|
-  ...InjectedProps,
-  keyboardDismissMode?: 'none' | 'on-drag',
-  swipeEnabled?: boolean,
-  swipeDistanceThreshold?: number,
-  swipeVelocityThreshold?: number,
-  onSwipeStart?: () => mixed,
-  onSwipeEnd?: () => mixed,
-  initialLayout?: { width?: number, height?: number },
-  lazy?: boolean,
-  lazyPlaceholderComponent?: React.ComponentType<{ route: Route }>,
-  tabBarComponent?: React.ComponentType<*>,
-  tabBarOptions?: TabBarOptions,
-  tabBarPosition?: 'top' | 'bottom',
-  sceneContainerStyle?: ViewStyleProp,
-  style?: ViewStyleProp,
-|};
+type Props = NavigationViewProps & {
+  keyboardDismissMode?: 'none' | 'on-drag';
+  swipeEnabled?: boolean;
+  swipeDistanceThreshold?: number;
+  swipeVelocityThreshold?: number;
+  onSwipeStart?: () => void;
+  onSwipeEnd?: () => void;
+  initialLayout?: { width?: number; height?: number };
+  lazy?: boolean;
+  lazyPlaceholderComponent?: React.ComponentType<{ route: Route }>;
+  tabBarComponent?: React.ComponentType<any>;
+  tabBarOptions?: TabBarOptions;
+  tabBarPosition?: 'top' | 'bottom';
+  sceneContainerStyle?: StyleProp<ViewStyle>;
+  style?: StyleProp<ViewStyle>;
+  navigation: NavigationProp;
+  descriptors: { [key: string]: SceneDescriptor };
+  screenProps?: unknown;
+};
 
 class MaterialTabView extends React.PureComponent<Props> {
   _renderLazyPlaceholder = props => {

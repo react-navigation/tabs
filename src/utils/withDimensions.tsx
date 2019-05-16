@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { Dimensions } from 'react-native';
+import { Dimensions, ScaledSize } from 'react-native';
 import hoistNonReactStatic from 'hoist-non-react-statics';
 
 type DimensionsType = {
@@ -36,7 +36,7 @@ export default function withDimensions<Props extends InjectedProps>(
       Dimensions.removeEventListener('change', this.handleOrientationChange);
     }
 
-    handleOrientationChange = ({ window }) => {
+    handleOrientationChange = ({ window }: { window: ScaledSize }) => {
       const isLandscape = isOrientationLandscape(window);
       this.setState({ isLandscape });
     };
