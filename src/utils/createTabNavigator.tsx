@@ -1,5 +1,3 @@
-/* @flow */
-
 import * as React from 'react';
 import {
   TabRouter,
@@ -8,28 +6,34 @@ import {
   createNavigator,
   SwitchActions,
 } from '@react-navigation/core';
+import { NavigationProp, SceneDescriptor, Route } from '../types';
 
-export type InjectedProps = {|
-  getLabelText: (props: { route: any }) => any,
-  getAccessibilityLabel: (props: { route: any }) => string,
-  getTestID: (props: { route: any }) => string,
+export type NavigatorProps = {
+  getLabelText: (props: { route: Route }) => string | undefined;
+  getAccessibilityLabel: (props: { route: Route }) => string | undefined;
+  getTestID: (props: { route: Route }) => string | undefined;
   renderIcon: (props: {
-    route: any,
-    focused: boolean,
-    tintColor: string,
-    horizontal?: boolean,
-  }) => React.Node,
-  renderScene: (props: { route: any }) => ?React.Node,
-  onIndexChange: (index: number) => any,
-  onTabPress: (props: { route: any }) => mixed,
-  onTabLongPress: (props: { route: any }) => mixed,
-  navigation: any,
-  descriptors: any,
-  screenProps?: any,
-|};
+    route: Route;
+    focused: boolean;
+    tintColor: string;
+    horizontal?: boolean;
+  }) => React.ReactNode;
+  renderScene: (props: { route: Route }) => React.ReactNode;
+  onIndexChange: (index: number) => void;
+  onTabPress: (props: { route: Route }) => void;
+  onTabLongPress: (props: { route: Route }) => void;
+  navigation: NavigationProp;
+  descriptors: { [key: string]: SceneDescriptor };
+  screenProps?: unknown;
+  navigationConfig: {};
+};
 
-export default function createTabNavigator(TabView: React.ComponentType<*>) {
-  class NavigationView extends React.Component<*, *> {
+export default function createTabNavigator<Props extends NavigatorProps>(
+  TabView: React.ComponentType<
+    Pick<Props, Exclude<keyof Props, keyof NavigatorProps>>
+  >
+): React.ComponentType<Props> {
+  class NavigationView extends React.Component<NavigatorProps> {
     _renderScene = ({ route }) => {
       const { screenProps, descriptors } = this.props;
       const descriptor = descriptors[route.key];
@@ -43,7 +47,17 @@ export default function createTabNavigator(TabView: React.ComponentType<*>) {
       );
     };
 
-    _renderIcon = ({ route, focused, tintColor, horizontal = false }) => {
+    _renderIcon = ({
+      route,
+      focused,
+      tintColor,
+      horizontal = false,
+    }: {
+      route: Route;
+      focused: boolean;
+      tintColor: string;
+      horizontal?: boolean;
+    }) => {
       const { descriptors } = this.props;
       const descriptor = descriptors[route.key];
       const options = descriptor.options;
@@ -57,7 +71,7 @@ export default function createTabNavigator(TabView: React.ComponentType<*>) {
       return null;
     };
 
-    _getLabelText = ({ route }) => {
+    _getLabelText = ({ route }: { route: Route }) => {
       const { descriptors } = this.props;
       const descriptor = descriptors[route.key];
       const options = descriptor.options;
@@ -73,7 +87,7 @@ export default function createTabNavigator(TabView: React.ComponentType<*>) {
       return route.routeName;
     };
 
-    _getAccessibilityLabel = ({ route }) => {
+    _getAccessibilityLabel = ({ route }: { route: Route }) => {
       const { descriptors } = this.props;
       const descriptor = descriptors[route.key];
       const options = descriptor.options;
@@ -90,9 +104,11 @@ export default function createTabNavigator(TabView: React.ComponentType<*>) {
           routes.length
         }`;
       }
+
+      return undefined;
     };
 
-    _getTestID = ({ route }) => {
+    _getTestID = ({ route }: { route: Route }) => {
       const { descriptors } = this.props;
       const descriptor = descriptors[route.key];
       const options = descriptor.options;
@@ -100,7 +116,13 @@ export default function createTabNavigator(TabView: React.ComponentType<*>) {
       return options.tabBarTestID;
     };
 
-    _makeDefaultHandler = ({ route, navigation }) => () => {
+    _makeDefaultHandler = ({
+      route,
+      navigation,
+    }: {
+      route: Route;
+      navigation: NavigationProp;
+    }) => () => {
       if (navigation.isFocused()) {
         if (route.hasOwnProperty('index') && route.index > 0) {
           // If current tab has a nested navigator, pop to top
@@ -113,7 +135,7 @@ export default function createTabNavigator(TabView: React.ComponentType<*>) {
       }
     };
 
-    _handleTabPress = ({ route }) => {
+    _handleTabPress = ({ route }: { route: Route }) => {
       this._isTabPress = true;
 
       // After tab press, handleIndexChange will be called synchronously
@@ -133,7 +155,7 @@ export default function createTabNavigator(TabView: React.ComponentType<*>) {
       }
     };
 
-    _handleTabLongPress = ({ route }) => {
+    _handleTabLongPress = ({ route }: { route: Route }) => {
       const { descriptors } = this.props;
       const descriptor = descriptors[route.key];
       const { navigation, options } = descriptor;
@@ -147,7 +169,7 @@ export default function createTabNavigator(TabView: React.ComponentType<*>) {
       }
     };
 
-    _handleIndexChange = index => {
+    _handleIndexChange = (index: number) => {
       if (this._isTabPress) {
         this._isTabPress = false;
         return;
@@ -156,14 +178,13 @@ export default function createTabNavigator(TabView: React.ComponentType<*>) {
       this._jumpTo(this.props.navigation.state.routes[index].routeName);
     };
 
-    _jumpTo = routeName => {
+    _jumpTo = (routeName: string) => {
       const { navigation } = this.props;
 
       navigation.dispatch(
         SwitchActions.jumpTo({
           routeName,
           key: navigation.state.key,
-          preserveFocus: true,
         })
       );
     };
@@ -199,7 +220,7 @@ export default function createTabNavigator(TabView: React.ComponentType<*>) {
     }
   }
 
-  return (routes: *, config: * = {}) => {
+  return (routes: object, config: object) => {
     const router = TabRouter(routes, config);
     return createNavigator(NavigationView, router, config);
   };
