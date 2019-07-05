@@ -302,6 +302,8 @@ class TabBarBottom extends React.Component<Props, State> {
     const {
       navigation,
       keyboardHidesTabBar,
+      activeTintColor,
+      inactiveTintColor,
       activeBackgroundColor,
       inactiveBackgroundColor,
       onTabPress,
@@ -370,6 +372,9 @@ class TabBarBottom extends React.Component<Props, State> {
               ? activeBackgroundColor
               : inactiveBackgroundColor;
 
+            const tintColor = focused ? activeTintColor : inactiveTintColor;
+            const horizontal = this._shouldUseHorizontalLabels();
+
             const ButtonComponent =
               this.props.getButtonComponent({ route }) ||
               TouchableWithoutFeedbackWrapper;
@@ -383,6 +388,9 @@ class TabBarBottom extends React.Component<Props, State> {
                 accessibilityLabel={accessibilityLabel}
                 accessibilityRole={accessibilityRole}
                 accessibilityStates={accessibilityStates}
+                focused={focused}
+                tintColor={tintColor}
+                horizontal={horizontal}
                 style={[
                   styles.tab,
                   { backgroundColor },
