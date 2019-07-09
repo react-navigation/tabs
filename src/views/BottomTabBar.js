@@ -377,6 +377,7 @@ class TabBarBottom extends React.Component<Props, State> {
             return (
               <ButtonComponent
                 key={route.key}
+                route={route}
                 onPress={() => onTabPress({ route })}
                 onLongPress={() => onTabLongPress({ route })}
                 testID={testID}
