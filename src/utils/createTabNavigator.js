@@ -19,7 +19,7 @@ export type InjectedProps = {|
     tintColor: string,
     horizontal?: boolean,
   }) => React.Node,
-  renderScene: (props: { route: any }) => ?React.Node,
+  renderScene: (props: { route: any }) => React.Node,
   onIndexChange: (index: number) => any,
   onTabPress: (props: { route: any }) => mixed,
   onTabLongPress: (props: { route: any }) => mixed,
