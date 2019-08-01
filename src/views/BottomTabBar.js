@@ -31,6 +31,7 @@ export type TabBarOptions = {
   showIcon: boolean,
   labelStyle: any,
   tabStyle: any,
+  activeTabStyle?: any,
   labelPosition?: LabelPosition,
   adaptive?: boolean,
   style: any,
@@ -390,6 +391,7 @@ class TabBarBottom extends React.Component<Props, State> {
                     ? styles.tabLandscape
                     : styles.tabPortrait,
                   tabStyle,
+                  focused ? this.props.activeTabStyle : null,
                 ]}
               >
                 {this._renderIcon(scene)}
