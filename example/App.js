@@ -1,11 +1,17 @@
 import * as React from 'react';
 import { registerRootComponent } from 'expo';
 import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
-import { createStackNavigator } from 'react-navigation-stack';
+import { Assets as StackAssets, createStackNavigator } from 'react-navigation-stack';
 import { Themed, createAppContainer } from '@react-navigation/native';
 import { ThemeColors, useTheme } from '@react-navigation/core';
+import { MaterialCommunityIcons } from '@expo/vector-icons';
+import { Asset } from 'expo-asset';
+
 import BottomTabs from './src/BottomTabs';
 import MaterialTopTabs from './src/MaterialTopTabs';
+
+// Load the back button etc
+Asset.loadAsync(StackAssets);
 
 const Home = props => {
   let theme = useTheme();
@@ -49,7 +55,48 @@ const List = createStackNavigator({
 const Navigation = createAppContainer(List);
 
 const App = () => {
-  return <Navigation theme="dark" />;
+  let [theme, setTheme] = React.useState('light');
+
+  return (
+    <View style={{ flex: 1 }}>
+      <Navigation theme={theme} />
+      <View style={{ position: 'absolute', bottom: 60, right: 20 }}>
+        <TouchableOpacity
+          onPress={() => {
+            setTheme(theme === 'light' ? 'dark' : 'light');
+          }}
+        >
+          <View
+            style={{
+              backgroundColor: ThemeColors[theme].bodyContent,
+              borderRadius: 25,
+              width: 50,
+              height: 50,
+              alignItems: 'center',
+              justifyContent: 'center',
+              borderColor: ThemeColors[theme].bodyBorder,
+              borderWidth: 1,
+              shadowColor: ThemeColors[theme].label,
+              shadowOffset: {
+                width: 0,
+                height: 2,
+              },
+              shadowOpacity: 0.4,
+              shadowRadius: 2,
+
+              elevation: 5,
+            }}
+          >
+            <MaterialCommunityIcons
+              name="theme-light-dark"
+              size={30}
+              color={ThemeColors[theme].label}
+            />
+          </View>
+        </TouchableOpacity>
+      </View>
+    </View>
+  );
 };
 
 const styles = {
