@@ -1,31 +1,35 @@
 import * as React from 'react';
 import { registerRootComponent } from 'expo';
 import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
-import { createStackNavigator } from 'react-navigation';
-import { createAppContainer } from '@react-navigation/native';
+import { createStackNavigator } from 'react-navigation-stack';
+import { Themed, createAppContainer } from '@react-navigation/native';
+import { ThemeColors, useTheme } from '@react-navigation/core';
 import BottomTabs from './src/BottomTabs';
 import MaterialTopTabs from './src/MaterialTopTabs';
 
-class Home extends React.Component {
-  render() {
-    return (
-      <View>
-        <TouchableOpacity
-          style={styles.item}
-          onPress={() => this.props.navigation.push('BottomTabs')}
-        >
-          <Text>Bottom tabs</Text>
-        </TouchableOpacity>
-        <TouchableOpacity
-          style={styles.item}
-          onPress={() => this.props.navigation.push('MaterialTopTabs')}
-        >
-          <Text>Material top tabs</Text>
-        </TouchableOpacity>
-      </View>
-    );
-  }
-}
+const Home = props => {
+  let theme = useTheme();
+
+  return (
+    <View>
+      <TouchableOpacity
+        activeOpacity={0.8}
+        style={theme === 'dark' ? styles.itemDark : styles.itemLight}
+        onPress={() => props.navigation.push('BottomTabs')}
+      >
+        <Themed.Text>Bottom tabs</Themed.Text>
+      </TouchableOpacity>
+      <TouchableOpacity
+        activeOpacity={0.8}
+        style={theme === 'dark' ? styles.itemDark : styles.itemLight}
+        onPress={() => props.navigation.push('MaterialTopTabs')}
+      >
+        <Themed.Text>Material top tabs</Themed.Text>
+      </TouchableOpacity>
+      <Themed.StatusBar />
+    </View>
+  );
+};
 
 const List = createStackNavigator({
   Home: {
@@ -42,14 +46,24 @@ const List = createStackNavigator({
   },
 });
 
-const App = createAppContainer(List);
+const Navigation = createAppContainer(List);
+
+const App = () => {
+  return <Navigation theme="dark" />;
+};
 
 const styles = {
-  item: {
+  itemLight: {
     padding: 16,
     backgroundColor: '#fff',
     borderBottomWidth: StyleSheet.hairlineWidth,
     borderBottomColor: '#eee',
+  },
+  itemDark: {
+    padding: 16,
+    backgroundColor: ThemeColors.dark.bodyContent,
+    borderBottomWidth: StyleSheet.hairlineWidth,
+    borderBottomColor: ThemeColors.dark.bodyBorder,
   },
 };
 
