@@ -2,7 +2,6 @@
 
 import * as React from 'react';
 import { View, Platform } from 'react-native';
-import { polyfill } from 'react-lifecycles-compat';
 import { TabView, PagerPan } from 'react-native-tab-view';
 import createTabNavigator, {
   type InjectedProps,
@@ -263,7 +262,5 @@ class MaterialTabView extends React.PureComponent<Props, State> {
     );
   }
 }
-
-polyfill(MaterialTabView);
 
 export default createTabNavigator(MaterialTabView);

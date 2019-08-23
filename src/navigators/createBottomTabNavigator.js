@@ -2,7 +2,6 @@
 
 import * as React from 'react';
 import { View, StyleSheet } from 'react-native';
-import { polyfill } from 'react-lifecycles-compat';
 
 // eslint-disable-next-line import/no-unresolved
 import { ScreenContainer } from 'react-native-screens';
@@ -133,8 +132,6 @@ class TabNavigationView extends React.PureComponent<Props, State> {
     );
   }
 }
-
-polyfill(TabNavigationView);
 
 const styles = StyleSheet.create({
   container: {
