@@ -32,19 +32,21 @@ type CommonProps<Options> = {
 };
 
 type ExtraProps = {
-  navigationConfig: {};
+  navigationConfig: any;
+};
+
+export type RenderIconProps = {
+  route: Route;
+  focused: boolean;
+  tintColor?: string;
+  horizontal?: boolean;
 };
 
 export type NavigationViewProps = {
   getLabelText: (props: { route: Route }) => string | undefined;
   getAccessibilityLabel: (props: { route: Route }) => string | undefined;
   getTestID: (props: { route: Route }) => string | undefined;
-  renderIcon: (props: {
-    route: Route;
-    focused: boolean;
-    tintColor?: string;
-    horizontal?: boolean;
-  }) => React.ReactNode;
+  renderIcon: (props: RenderIconProps) => React.ReactNode;
   renderScene: (props: { route: Route }) => React.ReactNode;
   onIndexChange: (index: number) => void;
   onTabPress: (props: { route: Route }) => void;
@@ -83,12 +85,7 @@ export default function createTabNavigator<
       focused,
       tintColor,
       horizontal = false,
-    }: {
-      route: Route;
-      focused: boolean;
-      tintColor: string;
-      horizontal?: boolean;
-    }) => {
+    }: RenderIconProps) => {
       const { descriptors } = this.props;
       const descriptor = descriptors[route.key];
       const options = descriptor.options;
