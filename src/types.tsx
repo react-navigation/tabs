@@ -50,21 +50,21 @@ export type Orientation = 'horizontal' | 'vertical';
 export type LabelPosition = 'beside-icon' | 'below-icon';
 
 export type BottomTabBarOptions = {
-  keyboardHidesTabBar: boolean;
+  keyboardHidesTabBar?: boolean;
   activeTintColor?: string;
   inactiveTintColor?: string;
   activeBackgroundColor?: string;
   inactiveBackgroundColor?: string;
-  allowFontScaling: boolean;
-  showLabel: boolean;
-  showIcon: boolean;
-  labelStyle: StyleProp<TextStyle>;
-  tabStyle: StyleProp<ViewStyle>;
+  allowFontScaling?: boolean;
+  showLabel?: boolean;
+  showIcon?: boolean;
+  labelStyle?: StyleProp<TextStyle>;
+  tabStyle?: StyleProp<ViewStyle>;
   labelPosition?:
     | LabelPosition
     | ((options: { deviceOrientation: Orientation }) => LabelPosition);
   adaptive?: boolean;
-  style: StyleProp<ViewStyle>;
+  style?: StyleProp<ViewStyle>;
 };
 
 export type BottomTabBarProps = BottomTabBarOptions & {
@@ -101,7 +101,9 @@ export type BottomTabBarProps = BottomTabBarOptions & {
   }) => React.ReactNode;
   dimensions: { width: number; height: number };
   isLandscape: boolean;
-  safeAreaInset: React.ComponentProps<typeof SafeAreaView>['forceInset'];
+  safeAreaInset?: React.ComponentProps<typeof SafeAreaView>['forceInset'];
+  jumpTo: (key: string) => void;
+  screenProps: unknown;
 };
 
 export type MaterialTabBarOptions = {
