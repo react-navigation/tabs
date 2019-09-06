@@ -157,7 +157,7 @@ export type MaterialTabBarProps = MaterialTabBarOptions & {
 
 export type NavigationCommonTabOptions = {
   title?: string;
-  tabBarLabel?: string;
+  tabBarLabel?: React.ReactNode;
   tabBarVisible?: boolean;
   tabBarAccessibilityLabel?: string;
   tabBarTestID?: string;
