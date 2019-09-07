@@ -220,12 +220,17 @@ export default function createTabNavigator<
     _isTabPress: boolean = false;
 
     render() {
-      const { descriptors, navigation, screenProps } = this.props;
+      const {
+        descriptors,
+        navigation,
+        screenProps,
+        navigationConfig,
+      } = this.props;
       const { state } = navigation;
       const route = state.routes[state.index];
       const descriptor = descriptors[route.key];
       const options = {
-        ...this.props.navigationConfig,
+        ...navigationConfig,
         ...descriptor.options,
       };
 
@@ -248,7 +253,7 @@ export default function createTabNavigator<
     }
   }
 
-  return (routes: RouteConfig<Options>, config: Options) => {
+  return (routes: RouteConfig<Options>, config: Partial<Options> = {}) => {
     const router = TabRouter(routes, config as any);
     return createNavigator(NavigationView, router, config as any);
   };
