@@ -45,16 +45,23 @@ export type NavigationProp<RouteName = string, Params = object> = {
   dangerouslyGetParent(): NavigationProp | undefined;
 };
 
+export type ThemedColor =
+  | string
+  | {
+      light: string;
+      dark: string;
+    };
+
 export type Orientation = 'horizontal' | 'vertical';
 
 export type LabelPosition = 'beside-icon' | 'below-icon';
 
 export type BottomTabBarOptions = {
   keyboardHidesTabBar?: boolean;
-  activeTintColor?: string;
-  inactiveTintColor?: string;
-  activeBackgroundColor?: string;
-  inactiveBackgroundColor?: string;
+  activeTintColor?: ThemedColor;
+  inactiveTintColor?: ThemedColor;
+  activeBackgroundColor?: ThemedColor;
+  inactiveBackgroundColor?: ThemedColor;
   allowFontScaling?: boolean;
   showLabel?: boolean;
   showIcon?: boolean;

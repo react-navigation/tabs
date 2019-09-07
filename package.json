@@ -1,6 +1,6 @@
 {
   "name": "react-navigation-tabs",
-  "version": "2.2.0",
+  "version": "2.4.0",
   "description": "Tab Navigation components for React Navigation",
   "main": "lib/commonjs/index.js",
   "module": "lib/module/index.js",
@@ -44,7 +44,7 @@
     "hoist-non-react-statics": "^3.3.0",
     "react-lifecycles-compat": "^3.0.4",
     "react-native-safe-area-view": "^0.14.6",
-    "react-native-tab-view": "^2.7.3"
+    "react-native-tab-view": "^2.9.0"
   },
   "devDependencies": {
     "@commitlint/config-conventional": "^7.5.0",

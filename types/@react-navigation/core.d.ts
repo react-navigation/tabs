@@ -1,6 +1,18 @@
 declare module '@react-navigation/core' {
   import * as React from 'react';
 
+  export type ThemeType = {
+    header: string;
+    headerBorder: string;
+  };
+
+  export const ThemeContext: React.Context<'light' | 'dark'>;
+
+  export const ThemeColors: {
+    light: ThemeType;
+    dark: ThemeType;
+  };
+
   export const StackActions: {
     completeTransition<T extends { key?: string } | undefined>(
       options?: T
