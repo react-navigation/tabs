@@ -134,12 +134,14 @@ class TabNavigationView extends React.PureComponent<Props, State> {
   };
 
   render() {
-    const { navigation, renderScene, lazy } = this.props;
+    const { navigation, renderScene, lazy, tabBarOptions } = this.props;
     const { routes } = navigation.state;
     const { loaded } = this.state;
+    // @ts-ignore
+    const { sideTabs } = tabBarOptions;
 
     return (
-      <View style={styles.container}>
+      <View style={[styles.container, sideTabs && styles.sideTabs]}>
         <ScreenContainer style={styles.pages}>
           {routes.map((route, index) => {
             if (lazy && !loaded.includes(index)) {
@@ -170,6 +172,9 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     overflow: 'hidden',
+  },
+  sideTabs: {
+    flexDirection: 'row-reverse',
   },
   pages: {
     flex: 1,

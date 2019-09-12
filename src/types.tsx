@@ -48,6 +48,7 @@ export type BottomTabBarOptions = {
   showLabel?: boolean;
   showIcon?: boolean;
   labelStyle?: StyleProp<TextStyle>;
+  sideTabs?: boolean;
   tabStyle?: StyleProp<ViewStyle>;
   labelPosition?:
     | LabelPosition
@@ -108,6 +109,7 @@ export type MaterialTabBarOptions = {
   showIcon?: boolean;
   showLabel?: boolean;
   upperCaseLabel?: boolean;
+  sideTabs?: boolean;
   tabStyle?: StyleProp<ViewStyle>;
   indicatorStyle?: StyleProp<ViewStyle>;
   iconStyle?: StyleProp<ViewStyle>;

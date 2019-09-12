@@ -197,7 +197,13 @@ class TabBarBottom extends React.Component<BottomTabBarProps, State> {
     route: NavigationRoute;
     focused: boolean;
   }) => {
-    const { labelStyle, showLabel, showIcon, allowFontScaling } = this.props;
+    const {
+      labelStyle,
+      showLabel,
+      showIcon,
+      allowFontScaling,
+      sideTabs,
+    } = this.props;
 
     if (showLabel === false) {
       return null;
@@ -208,6 +214,13 @@ class TabBarBottom extends React.Component<BottomTabBarProps, State> {
     const label = this.props.getLabelText({ route });
     const tintColor = focused ? activeTintColor : inactiveTintColor;
     const horizontal = this._shouldUseHorizontalLabels();
+    const { height } = this.state.layout;
+    const { routes } = this.props.navigation.state;
+
+    const sideStyles = {
+      height: height / (routes.length * 2) || 72,
+      flex: null,
+    };
 
     if (typeof label === 'string') {
       return (
@@ -218,6 +231,7 @@ class TabBarBottom extends React.Component<BottomTabBarProps, State> {
             { color: tintColor },
             showIcon && horizontal ? styles.labelBeside : styles.labelBeneath,
             labelStyle,
+            sideTabs && sideStyles,
           ]}
           allowFontScaling={allowFontScaling}
         >
