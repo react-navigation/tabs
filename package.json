@@ -1,11 +1,11 @@
 {
   "name": "react-navigation-tabs",
-  "version": "2.5.0",
+  "version": "2.5.2",
   "description": "Tab Navigation components for React Navigation",
   "main": "lib/commonjs/index.js",
   "module": "lib/module/index.js",
   "react-native": "lib/module/index.js",
-  "types": "lib/typescript/index.d.ts",
+  "types": "lib/typescript/src/index.d.ts",
   "files": [
     "src",
     "lib"
