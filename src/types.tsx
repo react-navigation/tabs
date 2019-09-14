@@ -38,6 +38,8 @@ export type Orientation = 'horizontal' | 'vertical';
 
 export type LabelPosition = 'beside-icon' | 'below-icon';
 
+export type SideTabPosition = 'left' | 'right';
+
 export type BottomTabBarOptions = {
   keyboardHidesTabBar?: boolean;
   activeTintColor?: ThemedColor;
@@ -54,6 +56,7 @@ export type BottomTabBarOptions = {
     | ((options: { deviceOrientation: Orientation }) => LabelPosition);
   adaptive?: boolean;
   style?: StyleProp<ViewStyle>;
+  sideTabs?: SideTabPosition;
 };
 
 export type BottomTabBarProps = BottomTabBarOptions & {
