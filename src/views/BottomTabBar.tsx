@@ -260,6 +260,7 @@ class TabBarBottom extends React.Component<BottomTabBarProps, State> {
     return (
       <CrossFadeIcon
         route={route}
+        focused={focused}
         horizontal={horizontal}
         activeOpacity={activeOpacity}
         inactiveOpacity={inactiveOpacity}
