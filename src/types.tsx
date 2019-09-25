@@ -55,6 +55,19 @@ export type BottomTabBarOptions = {
     | LabelPosition
     | ((options: { deviceOrientation: Orientation }) => LabelPosition);
   adaptive?: boolean;
+  safeAreaInset?: React.ComponentProps<typeof SafeAreaView>['forceInset'];
+  style?: StyleProp<ViewStyle>;
+};
+
+export type ButtonComponentProps = {
+  route: NavigationRoute;
+  focused: boolean;
+  onPress: () => void;
+  onLongPress: () => void;
+  testID?: string;
+  accessibilityLabel?: string;
+  accessibilityRole?: AccessibilityRole;
+  accessibilityStates?: AccessibilityState[];
   style?: StyleProp<ViewStyle>;
   sideTabs?: SideTabPosition;
 };
@@ -75,7 +88,7 @@ export type BottomTabBarProps = BottomTabBarOptions & {
   }) => AccessibilityState[];
   getButtonComponent: (props: {
     route: NavigationRoute;
-  }) => React.ComponentType<any> | undefined;
+  }) => React.ComponentType<ButtonComponentProps> | undefined;
   getLabelText: (props: {
     route: NavigationRoute;
   }) =>
@@ -95,7 +108,6 @@ export type BottomTabBarProps = BottomTabBarOptions & {
   }) => React.ReactNode;
   dimensions: { width: number; height: number };
   isLandscape: boolean;
-  safeAreaInset?: React.ComponentProps<typeof SafeAreaView>['forceInset'];
   jumpTo: (key: string) => void;
   screenProps: unknown;
 };
@@ -175,7 +187,7 @@ export type NavigationCommonTabOptions = {
 };
 
 export type NavigationBottomTabOptions = NavigationCommonTabOptions & {
-  tabBarButtonComponent?: React.ComponentType<BottomTabBarProps>;
+  tabBarButtonComponent?: React.ComponentType<ButtonComponentProps>;
 };
 
 export type NavigationMaterialTabOptions = NavigationCommonTabOptions & {
@@ -198,7 +210,8 @@ export type NavigationMaterialTabScreenComponent<
 > = React.ComponentType<NavigationTabScreenProps<Params, ScreenProps>> & {
   navigationOptions?: NavigationScreenConfig<
     NavigationMaterialTabOptions,
-    NavigationTabProp<NavigationRoute, Params>
+    NavigationTabProp<NavigationRoute, Params>,
+    ScreenProps
   >;
 };
 
@@ -208,7 +221,8 @@ export type NavigationBottomTabScreenComponent<
 > = React.ComponentType<NavigationTabScreenProps<Params, ScreenProps>> & {
   navigationOptions?: NavigationScreenConfig<
     NavigationBottomTabOptions,
-    NavigationTabProp<NavigationRoute, Params>
+    NavigationTabProp<NavigationRoute, Params>,
+    ScreenProps
   >;
 };
 
