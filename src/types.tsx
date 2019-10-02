@@ -184,11 +184,11 @@ export type NavigationCommonTabOptions = {
 };
 
 export type NavigationBottomTabOptions = NavigationCommonTabOptions & {
-  tabBarButtonComponent?: React.ComponentType<ButtonComponentProps>;
+  tabBarComponent?: React.ComponentType<ButtonComponentProps>;
 };
 
 export type NavigationMaterialTabOptions = NavigationCommonTabOptions & {
-  tabBarButtonComponent?: React.ComponentType<any>;
+  tabBarComponent?: React.ComponentType<any>;
   swipeEnabled?: boolean | ((state: NavigationState) => boolean);
 };
 
