@@ -21,15 +21,13 @@ export default function withDimensions<Props extends InjectedProps>(
   class EnhancedComponent extends React.Component {
     static displayName = `withDimensions(${WrappedComponent.displayName})`;
 
-    state = {};
-
     constructor(props: Props) {
       super(props);
 
       const { width, height } = Dimensions.get('window');
       this.state = {
         dimensions: { width, height },
-        isLandscape: isOrientationLandscape({ width, height })
+        isLandscape: isOrientationLandscape({ width, height }),
       };
     }
 
@@ -45,7 +43,7 @@ export default function withDimensions<Props extends InjectedProps>(
       const { width, height } = window;
       this.setState({
         dimensions: { width, height },
-        isLandscape: isOrientationLandscape({ width, height })
+        isLandscape: isOrientationLandscape({ width, height }),
       });
     };
 
