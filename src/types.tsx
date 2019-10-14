@@ -40,6 +40,7 @@ export type LabelPosition = 'beside-icon' | 'below-icon';
 
 export type BottomTabBarOptions = {
   keyboardHidesTabBar?: boolean;
+  keyboardHidesTabBarAnimated?: boolean;
   activeTintColor?: ThemedColor;
   inactiveTintColor?: ThemedColor;
   activeBackgroundColor?: ThemedColor;

@@ -64,6 +64,7 @@ class TouchableWithoutFeedbackWrapper extends React.Component<
 class TabBarBottom extends React.Component<BottomTabBarProps, State> {
   static defaultProps = {
     keyboardHidesTabBar: true,
+    keyboardHidesTabBarAnimated: true,
     activeTintColor: {
       light: '#007AFF',
       dark: '#fff',
@@ -119,7 +120,7 @@ class TabBarBottom extends React.Component<BottomTabBarProps, State> {
     this.setState({ keyboard: true }, () =>
       Animated.timing(this.state.visible, {
         toValue: 0,
-        duration: 150,
+        duration: this.props.keyboardHidesTabBarAnimated ? 150 : 0,
         useNativeDriver: true,
       }).start()
     );
@@ -127,7 +128,7 @@ class TabBarBottom extends React.Component<BottomTabBarProps, State> {
   _handleKeyboardHide = () =>
     Animated.timing(this.state.visible, {
       toValue: 1,
-      duration: 100,
+      duration: this.props.keyboardHidesTabBarAnimated ? 100 : 0,
       useNativeDriver: true,
     }).start(() => {
       this.setState({ keyboard: false });
