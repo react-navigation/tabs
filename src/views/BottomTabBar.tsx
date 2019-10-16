@@ -10,10 +10,15 @@ import {
 } from 'react-native';
 import SafeAreaView from 'react-native-safe-area-view';
 import { ThemeColors, ThemeContext, NavigationRoute } from 'react-navigation';
+import merge from 'lodash/merge';
 
 import CrossFadeIcon from './CrossFadeIcon';
 import withDimensions from '../utils/withDimensions';
-import { BottomTabBarProps, ButtonComponentProps } from '../types';
+import {
+  BottomTabBarProps,
+  ButtonComponentProps,
+  KeyboardAnimationConfig,
+} from '../types';
 
 type State = {
   layout: { height: number; width: number };
@@ -26,6 +31,19 @@ const isIos = Platform.OS === 'ios';
 const isIOS11 = majorVersion >= 11 && isIos;
 
 const DEFAULT_MAX_TAB_ITEM_WIDTH = 125;
+
+const DEFAULT_KEYBOARD_SHOW_CONFIG: KeyboardAnimationConfig = {
+  animation: 'timing',
+  config: {
+    duration: 150,
+  },
+};
+const DEFAULT_KEYBOARD_HIDE_CONFIG: KeyboardAnimationConfig = {
+  animation: 'timing',
+  config: {
+    duration: 100,
+  },
+};
 
 class TouchableWithoutFeedbackWrapper extends React.Component<
   ButtonComponentProps
@@ -64,7 +82,6 @@ class TouchableWithoutFeedbackWrapper extends React.Component<
 class TabBarBottom extends React.Component<BottomTabBarProps, State> {
   static defaultProps = {
     keyboardHidesTabBar: true,
-    keyboardHidesTabBarAnimated: true,
     activeTintColor: {
       light: '#007AFF',
       dark: '#fff',
@@ -117,22 +134,35 @@ class TabBarBottom extends React.Component<BottomTabBarProps, State> {
   context: 'light' | 'dark';
 
   _handleKeyboardShow = () =>
-    this.setState({ keyboard: true }, () =>
-      Animated.timing(this.state.visible, {
+    this.setState({ keyboard: true }, () => {
+      const { animation, config } = merge(
+        DEFAULT_KEYBOARD_SHOW_CONFIG,
+        this.props.keyboardHidesTabBarAnimationConfig &&
+          this.props.keyboardHidesTabBarAnimationConfig.show
+      );
+
+      Animated[animation](this.state.visible, {
         toValue: 0,
-        duration: this.props.keyboardHidesTabBarAnimated ? 150 : 0,
+        duration: config.duration,
         useNativeDriver: true,
-      }).start()
+      }).start();
+    });
+
+  _handleKeyboardHide = () => {
+    const { animation, config } = merge(
+      DEFAULT_KEYBOARD_HIDE_CONFIG,
+      this.props.keyboardHidesTabBarAnimationConfig &&
+        this.props.keyboardHidesTabBarAnimationConfig.hide
     );
 
-  _handleKeyboardHide = () =>
-    Animated.timing(this.state.visible, {
+    Animated[animation](this.state.visible, {
       toValue: 1,
-      duration: this.props.keyboardHidesTabBarAnimated ? 100 : 0,
+      duration: config.duration,
       useNativeDriver: true,
     }).start(() => {
       this.setState({ keyboard: false });
     });
+  };
 
   _handleLayout = (e: LayoutChangeEvent) => {
     const { layout } = this.state;

@@ -38,9 +38,20 @@ export type Orientation = 'horizontal' | 'vertical';
 
 export type LabelPosition = 'beside-icon' | 'below-icon';
 
+export type KeyboardAnimationConfig = {
+  animation: 'timing';
+  config: {
+    duration: number;
+  };
+};
+export type KeyboardHidesTabBarAnimationConfig = {
+  show?: Partial<KeyboardAnimationConfig>;
+  hide?: Partial<KeyboardAnimationConfig>;
+};
+
 export type BottomTabBarOptions = {
   keyboardHidesTabBar?: boolean;
-  keyboardHidesTabBarAnimated?: boolean;
+  keyboardHidesTabBarAnimationConfig?: KeyboardHidesTabBarAnimationConfig;
   activeTintColor?: ThemedColor;
   inactiveTintColor?: ThemedColor;
   activeBackgroundColor?: ThemedColor;
