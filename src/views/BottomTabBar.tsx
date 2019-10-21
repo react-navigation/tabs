@@ -10,13 +10,13 @@ import {
 } from 'react-native';
 import SafeAreaView from 'react-native-safe-area-view';
 import { ThemeColors, ThemeContext, NavigationRoute } from 'react-navigation';
-import merge from 'lodash/merge';
 
 import CrossFadeIcon from './CrossFadeIcon';
 import withDimensions from '../utils/withDimensions';
 import {
   BottomTabBarProps,
   ButtonComponentProps,
+  KeyboardHidesTabBarAnimationConfig,
   KeyboardAnimationConfig,
 } from '../types';
 
@@ -31,17 +31,20 @@ const isIos = Platform.OS === 'ios';
 const isIOS11 = majorVersion >= 11 && isIos;
 
 const DEFAULT_MAX_TAB_ITEM_WIDTH = 125;
-
-const DEFAULT_KEYBOARD_SHOW_CONFIG: KeyboardAnimationConfig = {
-  animation: 'timing',
-  config: {
-    duration: 150,
+const DEFAULT_KEYBOARD_ANIMATION_CONFIG: KeyboardHidesTabBarAnimationConfig = {
+  show: {
+    animation: 'timing',
+    config: {
+      useNativeDriver: true,
+      duration: 150,
+    },
   },
-};
-const DEFAULT_KEYBOARD_HIDE_CONFIG: KeyboardAnimationConfig = {
-  animation: 'timing',
-  config: {
-    duration: 100,
+  hide: {
+    animation: 'timing',
+    config: {
+      useNativeDriver: true,
+      duration: 100,
+    },
   },
 };
 
@@ -82,6 +85,7 @@ class TouchableWithoutFeedbackWrapper extends React.Component<
 class TabBarBottom extends React.Component<BottomTabBarProps, State> {
   static defaultProps = {
     keyboardHidesTabBar: true,
+    keyboardHidesTabBarAnimationConfig: DEFAULT_KEYBOARD_ANIMATION_CONFIG,
     activeTintColor: {
       light: '#007AFF',
       dark: '#fff',
@@ -133,32 +137,54 @@ class TabBarBottom extends React.Component<BottomTabBarProps, State> {
   // @ts-ignore
   context: 'light' | 'dark';
 
-  _handleKeyboardShow = () =>
-    this.setState({ keyboard: true }, () => {
-      const { animation, config } = merge(
-        DEFAULT_KEYBOARD_SHOW_CONFIG,
-        this.props.keyboardHidesTabBarAnimationConfig &&
-          this.props.keyboardHidesTabBarAnimationConfig.show
-      );
+  _getKeyboardAnimationConfigByType = (
+    type: keyof KeyboardHidesTabBarAnimationConfig
+  ): KeyboardAnimationConfig => {
+    const { keyboardHidesTabBarAnimationConfig } = this.props;
+    const defaultKeyboardAnimationConfig =
+      DEFAULT_KEYBOARD_ANIMATION_CONFIG[type];
+    const keyboardAnimationConfig =
+      (keyboardHidesTabBarAnimationConfig &&
+        keyboardHidesTabBarAnimationConfig[type]) ||
+      defaultKeyboardAnimationConfig;
 
+    // merge config only `timing` animation
+    if (
+      keyboardAnimationConfig &&
+      keyboardAnimationConfig.animation === 'timing'
+    ) {
+      return {
+        ...defaultKeyboardAnimationConfig,
+        ...keyboardAnimationConfig,
+        config: {
+          ...defaultKeyboardAnimationConfig.config,
+          ...keyboardAnimationConfig.config,
+        },
+      };
+    }
+
+    return keyboardAnimationConfig as KeyboardAnimationConfig;
+  };
+
+  _handleKeyboardShow = () => {
+    this.setState({ keyboard: true }, () => {
+      const { animation, config } = this._getKeyboardAnimationConfigByType(
+        'show'
+      );
       Animated[animation](this.state.visible, {
         toValue: 0,
-        duration: config.duration,
-        useNativeDriver: true,
+        ...config,
       }).start();
     });
+  };
 
   _handleKeyboardHide = () => {
-    const { animation, config } = merge(
-      DEFAULT_KEYBOARD_HIDE_CONFIG,
-      this.props.keyboardHidesTabBarAnimationConfig &&
-        this.props.keyboardHidesTabBarAnimationConfig.hide
+    const { animation, config } = this._getKeyboardAnimationConfigByType(
+      'hide'
     );
-
     Animated[animation](this.state.visible, {
       toValue: 1,
-      duration: config.duration,
-      useNativeDriver: true,
+      ...config,
     }).start(() => {
       this.setState({ keyboard: false });
     });
