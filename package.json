@@ -45,7 +45,6 @@
   "homepage": "https://github.com/react-navigation/tabs#readme",
   "dependencies": {
     "hoist-non-react-statics": "^3.3.0",
-    "lodash": "^4.17.15",
     "react-lifecycles-compat": "^3.0.4",
     "react-native-safe-area-view": "^0.14.6",
     "react-native-tab-view": "^2.9.0"
@@ -55,7 +54,6 @@
     "@expo/vector-icons": "^10.0.1",
     "@react-native-community/bob": "^0.6.1",
     "@types/hoist-non-react-statics": "^3.3.1",
-    "@types/lodash": "^4.14.144",
     "@types/react": "^16.8.17",
     "@types/react-native": "^0.57.57",
     "babel-jest": "^24.5.0",
