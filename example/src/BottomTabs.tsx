@@ -83,5 +83,5 @@ export default createBottomTabNavigator(
         bottom: 0,
       },
     },
-  },
+  }
 );

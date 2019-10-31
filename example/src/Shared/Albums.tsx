@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { Image, Dimensions, ScrollView, StyleSheet, View } from 'react-native';
+import { Image, Dimensions, ScrollView, StyleSheet } from 'react-native';
 import { TabBarHeightContext } from 'react-navigation-tabs';
 
 const COVERS = [

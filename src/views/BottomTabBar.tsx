@@ -142,7 +142,7 @@ class TabBarBottom extends React.Component<Props & BottomTabBarProps, State> {
   context: 'light' | 'dark';
 
   _getKeyboardAnimationConfigByType = (
-    type: keyof KeyboardHidesTabBarAnimationConfig,
+    type: keyof KeyboardHidesTabBarAnimationConfig
   ): KeyboardAnimationConfig => {
     const { keyboardHidesTabBarAnimationConfig } = this.props;
     const defaultKeyboardAnimationConfig =
@@ -173,7 +173,7 @@ class TabBarBottom extends React.Component<Props & BottomTabBarProps, State> {
   _handleKeyboardShow = () => {
     this.setState({ keyboard: true }, () => {
       const { animation, config } = this._getKeyboardAnimationConfigByType(
-        'show',
+        'show'
       );
       Animated[animation](this.state.visible, {
         toValue: 0,
@@ -184,7 +184,7 @@ class TabBarBottom extends React.Component<Props & BottomTabBarProps, State> {
 
   _handleKeyboardHide = () => {
     const { animation, config } = this._getKeyboardAnimationConfigByType(
-      'hide',
+      'hide'
     );
     Animated[animation](this.state.visible, {
       toValue: 1,
@@ -213,7 +213,7 @@ class TabBarBottom extends React.Component<Props & BottomTabBarProps, State> {
         if (this.props.onHeightChange) {
           this.props.onHeightChange(this.state.layout.height);
         }
-      },
+      }
     );
   };
 
@@ -493,7 +493,7 @@ class TabBarBottom extends React.Component<Props & BottomTabBarProps, State> {
             });
 
             const accessibilityStates = this.props.getAccessibilityStates(
-              scene,
+              scene
             );
 
             const testID = this.props.getTestID({ route });

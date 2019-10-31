@@ -193,5 +193,5 @@ const styles = StyleSheet.create({
 });
 
 export default createTabNavigator<Config, NavigationBottomTabOptions, Props>(
-  TabNavigationView,
+  TabNavigationView
 );
