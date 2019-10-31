@@ -8,7 +8,7 @@ import {
   Platform,
   LayoutChangeEvent,
 } from 'react-native';
-import { SafeAreaProvider } from "react-native-safe-area-context";
+import { SafeAreaProvider } from 'react-native-safe-area-context';
 import SafeAreaView from 'react-native-safe-area-view';
 import { ThemeColors, ThemeContext, NavigationRoute } from 'react-navigation';
 
