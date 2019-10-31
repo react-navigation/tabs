@@ -17,6 +17,7 @@ import { Asset } from 'expo-asset';
 
 import BottomTabs from './src/BottomTabs';
 import MaterialTopTabs from './src/MaterialTopTabs';
+import TransparentTabBar from './src/TransparentTabBar';
 
 // Load the back button etc
 Asset.loadAsync(StackAssets);
@@ -40,6 +41,13 @@ const Home = (props: NavigationStackScreenProps) => {
       >
         <Themed.Text>Material top tabs</Themed.Text>
       </TouchableOpacity>
+      <TouchableOpacity
+        activeOpacity={0.8}
+        style={theme === 'dark' ? styles.itemDark : styles.itemLight}
+        onPress={() => props.navigation.push('TransparentTabBar')}
+      >
+        <Themed.Text>Transparent tab bar</Themed.Text>
+      </TouchableOpacity>
       <Themed.StatusBar />
     </View>
   );
@@ -57,6 +65,10 @@ const List = createStackNavigator({
   MaterialTopTabs: {
     screen: MaterialTopTabs,
     navigationOptions: { title: 'Material top tabs' },
+  },
+  TransparentTabBar: {
+    screen: TransparentTabBar,
+    navigationOptions: { title: 'Transparent tab bar' },
   },
 });
 
