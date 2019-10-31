@@ -20,6 +20,10 @@ import {
   KeyboardAnimationConfig,
 } from '../types';
 
+type Props = {
+  onHeightChange?: (height: number) => void;
+};
+
 type State = {
   layout: { height: number; width: number };
   keyboard: boolean;
@@ -82,7 +86,7 @@ class TouchableWithoutFeedbackWrapper extends React.Component<
   }
 }
 
-class TabBarBottom extends React.Component<BottomTabBarProps, State> {
+class TabBarBottom extends React.Component<Props & BottomTabBarProps, State> {
   static defaultProps = {
     keyboardHidesTabBar: true,
     keyboardHidesTabBarAnimationConfig: DEFAULT_KEYBOARD_ANIMATION_CONFIG,
@@ -138,7 +142,7 @@ class TabBarBottom extends React.Component<BottomTabBarProps, State> {
   context: 'light' | 'dark';
 
   _getKeyboardAnimationConfigByType = (
-    type: keyof KeyboardHidesTabBarAnimationConfig
+    type: keyof KeyboardHidesTabBarAnimationConfig,
   ): KeyboardAnimationConfig => {
     const { keyboardHidesTabBarAnimationConfig } = this.props;
     const defaultKeyboardAnimationConfig =
@@ -169,7 +173,7 @@ class TabBarBottom extends React.Component<BottomTabBarProps, State> {
   _handleKeyboardShow = () => {
     this.setState({ keyboard: true }, () => {
       const { animation, config } = this._getKeyboardAnimationConfigByType(
-        'show'
+        'show',
       );
       Animated[animation](this.state.visible, {
         toValue: 0,
@@ -180,7 +184,7 @@ class TabBarBottom extends React.Component<BottomTabBarProps, State> {
 
   _handleKeyboardHide = () => {
     const { animation, config } = this._getKeyboardAnimationConfigByType(
-      'hide'
+      'hide',
     );
     Animated[animation](this.state.visible, {
       toValue: 1,
@@ -198,12 +202,19 @@ class TabBarBottom extends React.Component<BottomTabBarProps, State> {
       return;
     }
 
-    this.setState({
-      layout: {
-        height,
-        width,
+    this.setState(
+      {
+        layout: {
+          height,
+          width,
+        },
       },
-    });
+      () => {
+        if (this.props.onHeightChange) {
+          this.props.onHeightChange(this.state.layout.height);
+        }
+      },
+    );
   };
 
   _getActiveTintColor = () => {
@@ -482,7 +493,7 @@ class TabBarBottom extends React.Component<BottomTabBarProps, State> {
             });
 
             const accessibilityStates = this.props.getAccessibilityStates(
-              scene
+              scene,
             );
 
             const testID = this.props.getTestID({ route });

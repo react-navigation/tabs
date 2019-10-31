@@ -76,5 +76,12 @@ export default createBottomTabNavigator(
   },
   {
     initialRouteName: 'AlbumsScreen',
-  }
+    tabBarOptions: {
+      style: {
+        backgroundColor: 'rgba(245, 245, 245, 0.8)',
+        position: 'absolute',
+        bottom: 0,
+      },
+    },
+  },
 );

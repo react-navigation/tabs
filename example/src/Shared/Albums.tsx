@@ -1,5 +1,6 @@
 import * as React from 'react';
-import { Image, Dimensions, ScrollView, StyleSheet } from 'react-native';
+import { Image, Dimensions, ScrollView, StyleSheet, View } from 'react-native';
+import { TabBarHeightContext } from 'react-navigation-tabs';
 
 const COVERS = [
   require('../../assets/album-art-1.jpg'),
@@ -15,22 +16,29 @@ const COVERS = [
 export default class Albums extends React.Component {
   render() {
     return (
-      <ScrollView
-        style={styles.container}
-        contentContainerStyle={styles.content}
-      >
-        {COVERS.map((source, i) => (
-          // eslint-disable-next-line react/no-array-index-key
-          <Image key={i} source={source} style={styles.cover} />
-        ))}
-      </ScrollView>
+      <TabBarHeightContext.Consumer>
+        {height => (
+          <ScrollView
+            style={styles.container}
+            contentContainerStyle={[
+              styles.content,
+              { padding: 20, paddingBottom: height + 20 },
+            ]}
+          >
+            {COVERS.map((source, i) => (
+              // eslint-disable-next-line react/no-array-index-key
+              <Image key={i} source={source} style={styles.cover} />
+            ))}
+          </ScrollView>
+        )}
+      </TabBarHeightContext.Consumer>
     );
   }
 }
 
 const styles = StyleSheet.create({
   container: {
-    backgroundColor: '#343C46',
+    backgroundColor: 'whitesmoke',
   },
   content: {
     flexDirection: 'row',

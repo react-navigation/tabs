@@ -13,6 +13,7 @@ import { ScreenContainer } from 'react-native-screens';
 import createTabNavigator, {
   NavigationViewProps,
 } from '../utils/createTabNavigator';
+import TabBarHeightContext from '../utils/TabBarHeightContext';
 import BottomTabBar from '../views/BottomTabBar';
 import ResourceSavingScene from '../views/ResourceSavingScene';
 import {
@@ -44,6 +45,7 @@ type Props = NavigationViewProps &
 
 type State = {
   loaded: number[];
+  tabBarHeight: number;
 };
 
 class TabNavigationView extends React.PureComponent<Props, State> {
@@ -70,6 +72,7 @@ class TabNavigationView extends React.PureComponent<Props, State> {
 
   state = {
     loaded: [this.props.navigation.state.index],
+    tabBarHeight: 0,
   };
 
   _getButtonComponent = ({ route }: { route: NavigationRoute }) => {
@@ -82,6 +85,12 @@ class TabNavigationView extends React.PureComponent<Props, State> {
     }
 
     return undefined;
+  };
+
+  _onTabBarHeightChange = (tabBarHeight: number) => {
+    if (this.state.tabBarHeight !== tabBarHeight) {
+      this.setState({ tabBarHeight });
+    }
   };
 
   _renderTabBar = () => {
@@ -118,6 +127,7 @@ class TabNavigationView extends React.PureComponent<Props, State> {
         screenProps={screenProps}
         onTabPress={onTabPress}
         onTabLongPress={onTabLongPress}
+        onHeightChange={this._onTabBarHeightChange}
         getLabelText={getLabelText}
         getButtonComponent={this._getButtonComponent}
         getAccessibilityLabel={getAccessibilityLabel}
@@ -144,27 +154,29 @@ class TabNavigationView extends React.PureComponent<Props, State> {
 
     return (
       <View style={styles.container}>
-        <ScreenContainer style={styles.pages}>
-          {routes.map((route, index) => {
-            if (lazy && !loaded.includes(index)) {
-              // Don't render a screen if we've never navigated to it
-              return null;
-            }
+        <TabBarHeightContext.Provider value={this.state.tabBarHeight}>
+          <ScreenContainer style={styles.pages}>
+            {routes.map((route, index) => {
+              if (lazy && !loaded.includes(index)) {
+                // Don't render a screen if we've never navigated to it
+                return null;
+              }
 
-            const isFocused = navigation.state.index === index;
+              const isFocused = navigation.state.index === index;
 
-            return (
-              <ResourceSavingScene
-                key={route.key}
-                style={StyleSheet.absoluteFill}
-                isVisible={isFocused}
-              >
-                {renderScene({ route })}
-              </ResourceSavingScene>
-            );
-          })}
-        </ScreenContainer>
-        {this._renderTabBar()}
+              return (
+                <ResourceSavingScene
+                  key={route.key}
+                  style={StyleSheet.absoluteFill}
+                  isVisible={isFocused}
+                >
+                  {renderScene({ route })}
+                </ResourceSavingScene>
+              );
+            })}
+          </ScreenContainer>
+          {this._renderTabBar()}
+        </TabBarHeightContext.Provider>
       </View>
     );
   }
@@ -181,5 +193,5 @@ const styles = StyleSheet.create({
 });
 
 export default createTabNavigator<Config, NavigationBottomTabOptions, Props>(
-  TabNavigationView
+  TabNavigationView,
 );

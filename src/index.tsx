@@ -18,6 +18,7 @@ export { default as MaterialTopTabBar } from './views/MaterialTopTabBar';
  * Utils
  */
 export { default as createTabNavigator } from './utils/createTabNavigator';
+export { default as TabBarHeightContext } from './utils/TabBarHeightContext';
 
 /**
  * Types
