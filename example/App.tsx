@@ -22,7 +22,7 @@ import TransparentTabBar from './src/TransparentTabBar';
 Asset.loadAsync(StackAssets);
 
 const Home = (props: NavigationStackScreenProps) => {
-  let theme = useTheme();
+  const theme = useTheme();
 
   return (
     <View>
