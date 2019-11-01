@@ -114,6 +114,7 @@ export type BottomTabBarProps = BottomTabBarOptions & {
   navigation: NavigationTabProp;
   onTabPress: (props: { route: NavigationRoute }) => void;
   onTabLongPress: (props: { route: NavigationRoute }) => void;
+  onHeightChange?: (height: number) => void;
   getAccessibilityLabel: (props: {
     route: NavigationRoute;
   }) => string | undefined;

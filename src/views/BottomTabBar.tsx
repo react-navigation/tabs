@@ -20,10 +20,6 @@ import {
   KeyboardAnimationConfig,
 } from '../types';
 
-type Props = {
-  onHeightChange?: (height: number) => void;
-};
-
 type State = {
   layout: { height: number; width: number };
   keyboard: boolean;
@@ -86,7 +82,7 @@ class TouchableWithoutFeedbackWrapper extends React.Component<
   }
 }
 
-class TabBarBottom extends React.Component<Props & BottomTabBarProps, State> {
+class TabBarBottom extends React.Component<BottomTabBarProps, State> {
   static defaultProps = {
     keyboardHidesTabBar: true,
     keyboardHidesTabBarAnimationConfig: DEFAULT_KEYBOARD_ANIMATION_CONFIG,
@@ -202,19 +198,16 @@ class TabBarBottom extends React.Component<Props & BottomTabBarProps, State> {
       return;
     }
 
-    this.setState(
-      {
-        layout: {
-          height,
-          width,
-        },
+    if (this.props.onHeightChange) {
+      this.props.onHeightChange(height);
+    }
+
+    this.setState({
+      layout: {
+        height,
+        width,
       },
-      () => {
-        if (this.props.onHeightChange) {
-          this.props.onHeightChange(this.state.layout.height);
-        }
-      }
-    );
+    });
   };
 
   _getActiveTintColor = () => {
