@@ -175,8 +175,8 @@ class TabNavigationView extends React.PureComponent<Props, State> {
               );
             })}
           </ScreenContainer>
-          {this._renderTabBar()}
         </TabBarHeightContext.Provider>
+        {this._renderTabBar()}
       </View>
     );
   }
