@@ -203,7 +203,13 @@ export type MaterialTabBarProps = MaterialTabBarOptions & {
 
 export type NavigationCommonTabOptions = {
   title?: string;
-  tabBarLabel?: React.ReactNode;
+  tabBarLabel?: 
+    | React.ReactNode
+    | ((props: {
+        focused: boolean;
+        tintColor?: string;
+        horizontal?: boolean;
+      }) => React.ReactNode);
   tabBarVisible?: boolean;
   tabBarAccessibilityLabel?: string;
   tabBarTestID?: string;
