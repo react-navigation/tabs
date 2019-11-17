@@ -13,6 +13,7 @@ type Props = {
   renderIcon: (props: {
     route: NavigationRoute;
     focused: boolean;
+    currentOpacity: number;
     tintColor?: string;
     horizontal?: boolean;
   }) => React.ReactNode;
@@ -40,6 +41,7 @@ export default class TabBarIcon extends React.Component<Props> {
           {renderIcon({
             route,
             focused: true,
+            currentOpacity: activeOpacity,
             horizontal,
             tintColor: activeTintColor,
           })}
@@ -48,6 +50,7 @@ export default class TabBarIcon extends React.Component<Props> {
           {renderIcon({
             route,
             focused: false,
+            currentOpacity: inactiveOpacity,
             horizontal,
             tintColor: inactiveTintColor,
           })}
