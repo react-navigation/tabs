@@ -1,4 +1,5 @@
 import * as React from 'react';
+import { registerRootComponent } from 'expo';
 import { View, TouchableOpacity, StyleSheet } from 'react-native';
 import {
   Assets as StackAssets,
@@ -130,4 +131,5 @@ const styles = {
   },
 };
 
-export default App;
+// @ts-ignore
+registerRootComponent(App);
