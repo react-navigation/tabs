@@ -98,6 +98,7 @@ export type BottomTabBarOptions = {
   adaptive?: boolean;
   safeAreaInset?: React.ComponentProps<typeof SafeAreaView>['forceInset'];
   style?: StyleProp<ViewStyle>;
+  sideTabs?: SideTabPosition;
 };
 
 export type ButtonComponentProps = {
@@ -110,7 +111,6 @@ export type ButtonComponentProps = {
   accessibilityRole?: AccessibilityRole;
   accessibilityStates?: AccessibilityState[];
   style?: StyleProp<ViewStyle>;
-  sideTabs?: SideTabPosition;
 };
 
 export type BottomTabBarProps = BottomTabBarOptions & {
