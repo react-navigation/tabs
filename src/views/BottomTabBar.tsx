@@ -97,6 +97,7 @@ class TabBarBottom extends React.Component<BottomTabBarProps, State> {
     activeBackgroundColor: 'transparent',
     inactiveBackgroundColor: 'transparent',
     showLabel: true,
+    showLabelOnFocus: false,
     showIcon: true,
     allowFontScaling: true,
     adaptive: isIOS11,
@@ -257,7 +258,17 @@ class TabBarBottom extends React.Component<BottomTabBarProps, State> {
     route: NavigationRoute;
     focused: boolean;
   }) => {
-    const { labelStyle, showLabel, showIcon, allowFontScaling } = this.props;
+    const {
+      labelStyle,
+      showLabel,
+      showLabelOnFocus,
+      showIcon,
+      allowFontScaling,
+    } = this.props;
+
+    if (showLabelOnFocus === true && focused === false) {
+      return null;
+    }
 
     if (showLabel === false) {
       return null;

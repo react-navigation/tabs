@@ -87,6 +87,7 @@ export type BottomTabBarOptions = {
   inactiveBackgroundColor?: ThemedColor;
   allowFontScaling?: boolean;
   showLabel?: boolean;
+  showLabelOnFocus?: boolean;
   showIcon?: boolean;
   labelStyle?: StyleProp<TextStyle>;
   tabStyle?: StyleProp<ViewStyle>;
@@ -160,6 +161,7 @@ export type MaterialTabBarOptions = {
   scrollEnabled?: boolean;
   showIcon?: boolean;
   showLabel?: boolean;
+  showLabelOnFocus?: boolean;
   upperCaseLabel?: boolean;
   tabStyle?: StyleProp<ViewStyle>;
   indicatorStyle?: StyleProp<ViewStyle>;

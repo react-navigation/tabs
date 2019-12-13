@@ -14,6 +14,7 @@ export default class TabBarTop extends React.PureComponent<
     activeTintColor: 'rgba(255, 255, 255, 1)',
     inactiveTintColor: 'rgba(255, 255, 255, 0.7)',
     showIcon: false,
+    showLabelOnFocus: false,
     showLabel: true,
     upperCaseLabel: true,
     allowFontScaling: true,
@@ -22,10 +23,15 @@ export default class TabBarTop extends React.PureComponent<
   _renderLabel = ({ route, focused, color }: Scene) => {
     const {
       showLabel,
+      showLabelOnFocus,
       upperCaseLabel,
       labelStyle,
       allowFontScaling,
     } = this.props;
+
+    if (showLabelOnFocus === true && focused === false) {
+      return null;
+    }
 
     if (showLabel === false) {
       return null;
