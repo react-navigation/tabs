@@ -45,7 +45,6 @@ export default class ResourceSavingScene extends React.Component<Props> {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    overflow: 'hidden',
   },
   attached: {
     flex: 1,
