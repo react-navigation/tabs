@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { View, Text, StyleSheet, FlatList } from 'react-native';
+import { View, Text, StyleSheet, FlatList, TextInput } from 'react-native';
 
 type Item = { name: string; number: number };
 
@@ -85,12 +85,18 @@ export default class Contacts extends React.Component {
 
   render() {
     return (
-      <FlatList
-        data={CONTACTS}
-        keyExtractor={(_, i) => String(i)}
-        renderItem={this._renderItem}
-        ItemSeparatorComponent={this._ItemSeparator}
-      />
+      <>
+        <TextInput
+          style={styles.textInput}
+          value="readonly textinput to see how tab bar behaves w/ keyboard"
+        />
+        <FlatList
+          data={CONTACTS}
+          keyExtractor={(_, i) => String(i)}
+          renderItem={this._renderItem}
+          ItemSeparatorComponent={this._ItemSeparator}
+        />
+      </>
     );
   }
 }
@@ -129,5 +135,8 @@ const styles = StyleSheet.create({
   separator: {
     height: StyleSheet.hairlineWidth,
     backgroundColor: 'rgba(0, 0, 0, .08)',
+  },
+  textInput: {
+    height: 50,
   },
 });

@@ -8,7 +8,7 @@ const MESSAGES = [
   'make me a sandwich',
 ];
 
-export default class Albums extends React.Component {
+export default class Chat extends React.Component {
   render() {
     return (
       <View style={styles.container}>
