@@ -173,7 +173,6 @@ class TabNavigationView extends React.PureComponent<Props, State> {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    overflow: 'hidden',
   },
   pages: {
     flex: 1,
