@@ -34,6 +34,7 @@ type ExtraProps<Config extends {}> = {
 export type RenderIconProps = {
   route: NavigationRoute;
   focused: boolean;
+  currentOpacity?: number;
   tintColor?: string;
   horizontal?: boolean;
 };
@@ -75,6 +76,7 @@ export default function createTabNavigator<
     _renderIcon = ({
       route,
       focused,
+      currentOpacity,
       tintColor,
       horizontal = false,
     }: RenderIconProps) => {
@@ -84,7 +86,12 @@ export default function createTabNavigator<
 
       if (options.tabBarIcon) {
         return typeof options.tabBarIcon === 'function'
-          ? options.tabBarIcon({ focused, tintColor, horizontal })
+          ? options.tabBarIcon({
+              focused,
+              tintColor,
+              currentOpacity,
+              horizontal,
+            })
           : options.tabBarIcon;
       }
 

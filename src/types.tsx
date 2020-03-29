@@ -141,6 +141,7 @@ export type BottomTabBarProps = BottomTabBarOptions & {
   renderIcon: (props: {
     route: NavigationRoute;
     focused: boolean;
+    currentOpacity: number;
     tintColor?: string;
     horizontal?: boolean;
   }) => React.ReactNode;
@@ -211,6 +212,7 @@ export type NavigationCommonTabOptions = {
     | React.ReactNode
     | ((props: {
         focused: boolean;
+        currentOpacity?: number;
         tintColor?: string;
         horizontal?: boolean;
       }) => React.ReactNode);
